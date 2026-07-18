@@ -67,7 +67,23 @@
       "averagePredictionMs": 159,
       "outputSignal": [-0.17529296875, 1.3466796875],
       "passed": true
+    },
+    {
+      "deviceSelector": "200",
+      "productModel": "HOP-AL10",
+      "enumeratedAccelerators": [
+        "NPU_ohos.boot.hardware.Kirin9030Pro_v2_0",
+        "HIAI_F"
+      ],
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9030Pro_v2_0",
+      "selectedDeviceType": 3,
+      "modelLoadMs": 1628,
+      "firstPredictionMs": 137,
+      "totalPredictionMs": 6095,
+      "averagePredictionMs": 135,
+      "outputSignal": [-0.17529296875, 1.3466796875],
+      "passed": true
     }
   ],
-  "decision": "Keep FP16 as the baseline candidate. All three devices ran on an enumerated NNRT NPU accelerator; end-to-end Reader timing and retained-page quality comparison remain required before publication."
+  "decision": "Keep FP16 as the baseline candidate. All four devices ran on an enumerated NNRT NPU accelerator; end-to-end Reader timing and retained-page quality comparison remain required before publication."
 }

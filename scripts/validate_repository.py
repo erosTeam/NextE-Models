@@ -28,6 +28,19 @@ def validate_artifact(artifact: dict, label: str) -> None:
     require(bool(artifact["fileName"]), f"{label}: artifact file name is missing")
 
 
+def validate_device_coverage(required_selectors: list[str], devices: list[dict]) -> None:
+    matrix_selectors = [str(device["deviceSelector"]) for device in devices]
+    require(
+        len(matrix_selectors) == len(set(matrix_selectors)),
+        "FP16 device matrix contains duplicate selectors",
+    )
+    missing = sorted(set(required_selectors) - set(matrix_selectors))
+    require(
+        not missing,
+        f"FP16 device matrix is missing candidate selectors: {', '.join(missing)}",
+    )
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     lock = load(root / "models/realesrgan-x2plus/source.lock.json")
@@ -60,9 +73,9 @@ def main() -> int:
         "FP16 device matrix artifact does not match the candidate",
     )
     matrix_devices = matrix["devices"]
-    require(
-        {device["deviceSelector"] for device in matrix_devices} == {"103", "197", "237"},
-        "FP16 device matrix must cover selectors 103, 197, and 237",
+    validate_device_coverage(
+        candidate["deviceEvidence"]["deviceSelectors"],
+        matrix_devices,
     )
     for device in matrix_devices:
         label = f"FP16 device {device['deviceSelector']}"

@@ -11,7 +11,7 @@
   "deviceEvidenceRef": "../experiments/fp16-device-matrix-20260719.json",
   "deviceEvidence": {
     "scope": "raw NNRT prediction loop",
-    "deviceSelectors": ["103", "197", "237"],
+    "deviceSelectors": ["103", "197", "237", "200"],
     "endToEndReaderValidated": false,
     "qualityValidated": false
   },

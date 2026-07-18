@@ -55,7 +55,19 @@
       "eventLoopMaxDelayMs": 25,
       "outputBytes": 2714872,
       "passed": true
+    },
+    {
+      "deviceSelector": "200",
+      "productModel": "HOP-AL10",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9030Pro_v2_0",
+      "preparationElapsedMs": 1804,
+      "processElapsedMs": 6313,
+      "modelInferenceMs": 5357,
+      "eventLoopP95DelayMs": 1,
+      "eventLoopMaxDelayMs": 63,
+      "outputBytes": 2714872,
+      "passed": true
     }
   ],
-  "decision": "Keep FP16 as the publishable runtime candidate. The native background path completed the full Reader pipeline on all three NPU implementations with low event-loop P95 delay, and NEON conversion reduced process time on every device. Retained real-page visual comparison remains a separate publication gate."
+  "decision": "Keep FP16 as the publishable runtime candidate. The native background path completed the full Reader pipeline on all four NPU implementations with low event-loop P95 delay. NEON conversion reduced process time on every device where a scalar baseline was recorded. Retained real-page visual comparison remains a separate publication gate."
 }
