@@ -1,0 +1,25 @@
+# Local source checkpoints and generated model artifacts
+artifacts/
+downloads/
+work/
+*.pth
+*.pt
+*.onnx
+*.ms
+*.bin
+
+# Calibration and evaluation inputs are local-only and must never be committed.
+calibration-data/
+evaluation-data/
+private-data/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Platform and editor
+.DS_Store
+.idea/
+.vscode/

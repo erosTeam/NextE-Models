@@ -1,0 +1,44 @@
+name: Release model
+
+on:
+  push:
+    tags:
+      - "realesrgan-x2plus-nnrt-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Require a published manifest entry
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -c 'import json,os; data=json.load(open("manifests/models-v1.json")); entry=next(item for item in data["models"] if item["id"]=="realesrgan_x2plus_nnrt_fp16"); expected="https://github.com/erosTeam/NextE-Models/releases/download/"+os.environ["RELEASE_TAG"]+"/"+entry["artifact"]["fileName"]; assert entry["status"]=="published"; assert entry["artifact"]["urls"]==[expected]'
+      - name: Install pinned exporter
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.2.2
+          python -m pip install onnx==1.16.0
+      - name: Fetch locked inputs
+        run: |
+          python scripts/fetch_locked_source.py models/realesrgan-x2plus/source.lock.json downloads/RealESRGAN_x2plus.pth
+          python scripts/fetch_locked_source.py models/realesrgan-x2plus/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
+          mkdir -p work/mindspore
+          tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+      - name: Rebuild and verify immutable asset
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python scripts/export_realesrgan_x2plus_onnx.py --checkpoint downloads/RealESRGAN_x2plus.pth --output work/realesrgan-x2plus-180.onnx
+          python scripts/convert_mindspore.py --converter work/mindspore/tools/converter/converter/converter_lite --onnx work/realesrgan-x2plus-180.onnx --output artifacts/realesrgan-x2plus-180-fp16.ms --mode fp16
+          python scripts/verify_publishable.py --model realesrgan_x2plus_nnrt_fp16 --artifact artifacts/realesrgan-x2plus-180-fp16.ms --tag "$RELEASE_TAG"
+      - name: Create immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" artifacts/realesrgan-x2plus-180-fp16.ms --verify-tag --generate-notes --title "$GITHUB_REF_NAME"

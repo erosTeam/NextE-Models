@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_x2plus_nnrt_weight_int8",
+  "status": "rejected_for_performance",
+  "artifact": {
+    "fileName": "realesrgan-x2plus-180-weightq8.ms",
+    "bytes": 17462400,
+    "sha256": "f6c348ef99bdd45b7e045ce584c02eba75ee462fe898005f8de94a7ecf8fd7c8"
+  },
+  "deviceEvidence": {
+    "deviceSelector": "103",
+    "scope": "raw NNRT prediction loop",
+    "predictionCount": 45,
+    "totalPredictionMs": 5630,
+    "fp16BaselineTotalPredictionMs": 5632
+  },
+  "decision": "Do not publish as the preferred runtime. It reduces file size but showed no inference speed gain."
+}
