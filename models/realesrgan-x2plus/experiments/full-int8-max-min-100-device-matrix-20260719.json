@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_x2plus_nnrt_full_int8_max_min_100",
+  "status": "rejected_nnrt_compile",
+  "artifact": {
+    "fileName": "realesrgan-x2plus-180-full-int8-max-min-100.ms",
+    "bytes": 17829280,
+    "sha256": "521df882cb163aff369f97276bc6e4dd666397b017cb85d86dd22c574f474b68"
+  },
+  "conversion": {
+    "date": "2026-07-19",
+    "calibrationMethod": "MAX_MIN",
+    "calibrationBufferCount": 100,
+    "calibrationSource": "local real Reader page cache",
+    "calibrationDataTracked": false,
+    "result": "converter_success",
+    "runtimeGraph": "mixed INT8 and Float32",
+    "floatFallbackOperators": [
+      "LeakyRelu",
+      "Concat",
+      "Mul",
+      "Add",
+      "Resize"
+    ]
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "productModel": "MLR-AL00",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "loadPassed": false,
+      "runtimeEvidence": "Build NNCompilation failed, ret: 1; Failed to create model"
+    },
+    {
+      "deviceSelector": "197",
+      "productModel": "ALN-AL80",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "loadPassed": false,
+      "runtimeEvidence": "model load returned no usable input tensor"
+    },
+    {
+      "deviceSelector": "237",
+      "productModel": "VDE-AL00",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "loadPassed": false,
+      "runtimeEvidence": "model load returned no usable input tensor"
+    }
+  ],
+  "decision": "Reject this candidate and do not publish it. Successful calibration and conversion did not produce an NNRT-compilable graph on any target NPU. A KL retry is deferred because it changes calibration ranges, not the mixed quantized operator structure that failed before inference."
+}

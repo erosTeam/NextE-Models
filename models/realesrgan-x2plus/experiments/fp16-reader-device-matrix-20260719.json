@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_x2plus_nnrt_fp16",
+  "status": "reader_pipeline_validated",
+  "artifact": {
+    "fileName": "realesrgan-x2plus-180-fp16.ms",
+    "bytes": 33735064,
+    "sha256": "b6ee78c1e01d79fa5fb4ccb0b1bca039f804eb9c8f77e6c37b065869eb25866a"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "scope": "NextE Reader decode, native NNRT tiling, prediction, stitching, PixelMap creation, and JPEG cache write",
+    "input": "generated reader-sized JPEG",
+    "sourceSize": [800, 1149],
+    "outputSize": [1600, 2298],
+    "tileCount": 40,
+    "performanceMode": "PERFORMANCE_HIGH",
+    "priority": "PRIORITY_LOW",
+    "implementation": "single native N-API background task with ARM64 NEON pixel conversion",
+    "runnerTimeoutMs": 120000
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "productModel": "MLR-AL00",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "preparationElapsedMs": 3641,
+      "scalarBaselineProcessElapsedMs": 7055,
+      "processElapsedMs": 6487,
+      "eventLoopP95DelayMs": 2,
+      "eventLoopMaxDelayMs": 276,
+      "outputBytes": 2715036,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "productModel": "ALN-AL80",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "preparationElapsedMs": 4696,
+      "scalarBaselineProcessElapsedMs": 6938,
+      "processElapsedMs": 6204,
+      "eventLoopP95DelayMs": 1,
+      "eventLoopMaxDelayMs": 115,
+      "outputBytes": 2715036,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "productModel": "VDE-AL00",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "preparationElapsedMs": 1709,
+      "scalarBaselineProcessElapsedMs": 7656,
+      "processElapsedMs": 7332,
+      "eventLoopP95DelayMs": 1,
+      "eventLoopMaxDelayMs": 25,
+      "outputBytes": 2714872,
+      "passed": true
+    }
+  ],
+  "decision": "Keep FP16 as the publishable runtime candidate. The native background path completed the full Reader pipeline on all three NPU implementations with low event-loop P95 delay, and NEON conversion reduced process time on every device. Retained real-page visual comparison remains a separate publication gate."
+}
