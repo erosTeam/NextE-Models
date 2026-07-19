@@ -67,6 +67,12 @@ def main() -> int:
         / "models/waifu2x-art-noise0-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
     )
     waifu_cunet_lock = load(root / "models/waifu2x-cunet-noise0-x2/source.lock.json")
+    waifu_cunet_candidate = load(
+        root / "models/waifu2x-cunet-noise0-x2/candidates/fp16-baseline.json"
+    )
+    waifu_cunet_policy = load(
+        root / "models/waifu2x-cunet-noise0-x2/experiments/fp16-reader-device-policy-20260719.json"
+    )
     waifu_candidate = load(
         root / "models/waifu2x-photo-noise0-x2/candidates/fp16-baseline.json"
     )
@@ -144,6 +150,36 @@ def main() -> int:
     require(waifu_cunet_contract["outputShape"] == [1, 3, 256, 256], "waifu2x CUNet output shape changed")
     require(waifu_cunet_contract["tileSize"] == 128, "waifu2x CUNet tile size changed")
     require(waifu_cunet_contract["prepadding"] == 18, "waifu2x CUNet prepadding changed")
+    validate_artifact(waifu_cunet_candidate["artifact"], "waifu2x CUNet FP16 candidate")
+    validate_artifact(waifu_cunet_policy["artifact"], "waifu2x CUNet device policy")
+    require(
+        waifu_cunet_policy["artifact"] == waifu_cunet_candidate["artifact"],
+        "waifu2x CUNet policy artifact drift",
+    )
+    validate_device_coverage(
+        waifu_cunet_candidate["deviceEvidence"]["deviceSelectors"],
+        waifu_cunet_policy["devices"],
+    )
+    for device in waifu_cunet_policy["devices"]:
+        label = f"waifu2x CUNet device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: device policy did not pass")
+        require(
+            str(device["selectedAccelerator"]).startswith("NPU_"),
+            f"{label}: selected accelerator is not an enumerated NPU",
+        )
+        require(
+            device["runtimeDecision"] in {"nnrt", "vulkan_fallback"},
+            f"{label}: unsupported runtime decision",
+        )
+    cunet_nnrt_devices = [
+        device for device in waifu_cunet_policy["devices"]
+        if device["runtimeDecision"] == "nnrt"
+    ]
+    require(cunet_nnrt_devices, "waifu2x CUNet has no validated NNRT device")
+    for device in cunet_nnrt_devices:
+        label = f"waifu2x CUNet NNRT device {device['deviceSelector']}"
+        require(float(device["meanAbsoluteError"]) < 0.1, f"{label}: mean output error too large")
+        require(int(device["samplesOverSixtyFour"]) == 0, f"{label}: severe output error")
     validate_artifact(waifu_art_candidate["artifact"], "waifu2x art FP16 candidate")
     validate_artifact(waifu_art_reader_matrix["artifact"], "waifu2x art Reader matrix")
     require(
@@ -391,6 +427,20 @@ def main() -> int:
     )
     require(waifu_art_candidate["release"] is not None, "published waifu2x art candidate has no release")
     require(bool(waifu_art_entry["artifact"]["urls"]), "published waifu2x art artifact URL missing")
+
+    waifu_cunet_entry = next(
+        entry for entry in entries if entry["id"] == waifu_cunet_candidate["modelId"]
+    )
+    require(
+        {key: value for key, value in waifu_cunet_entry["artifact"].items() if key != "urls"}
+        == waifu_cunet_candidate["artifact"],
+        "waifu2x CUNet metadata drift",
+    )
+    require(waifu_cunet_candidate["status"] == "published", "waifu2x CUNet publication state drift")
+    require(waifu_cunet_entry["status"] == "published", "waifu2x CUNet manifest publication drift")
+    require(waifu_cunet_candidate["runtimeValidationRequired"] is True, "waifu2x CUNet runtime guard missing")
+    require(waifu_cunet_candidate["release"] is not None, "published waifu2x CUNet candidate has no release")
+    require(bool(waifu_cunet_entry["artifact"]["urls"]), "published waifu2x CUNet artifact URL missing")
 
     espcn_entry = next(entry for entry in entries if entry["id"] == espcn_candidate["modelId"])
     require(

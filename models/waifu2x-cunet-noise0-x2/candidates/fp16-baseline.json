@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_cunet_noise0_x2_nnrt_fp16",
+  "status": "published",
+  "sourceOnnx": {
+    "fileName": "waifu2x-cunet-noise0-x2-164.onnx",
+    "bytes": 5154476,
+    "sha256": "e40d32a8aacb0ea167061894e89e494aef51987703e3344700e10c43430f7f24"
+  },
+  "artifact": {
+    "fileName": "waifu2x-cunet-noise0-x2-164-fp16.ms",
+    "bytes": 2596352,
+    "sha256": "b1863d489cd99428bf61f9d9302ef310ba72008d61621726fa480199f1bfc5b1"
+  },
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../experiments/fp16-reader-device-policy-20260719.json",
+  "qualityEvidenceRef": "../experiments/fp16-reader-device-policy-20260719.json",
+  "deviceEvidence": {
+    "scope": "full NextE Reader pipeline plus model-specific NNRT self-test and Vulkan fallback",
+    "deviceSelectors": ["103", "197", "237"],
+    "endToEndReaderValidated": true,
+    "qualityValidated": true
+  },
+  "runtimeValidationRequired": true,
+  "sourceGraphEquivalenceRequired": false,
+  "qualityValidationRequired": false,
+  "applicationIntegrationRequired": true,
+  "applicationIntegration": "CUNet NNRT is enabled only when a fixed-input device self-test returns the validated range. Rejected accelerators fall back to the existing Vulkan model without displaying their incorrect output.",
+  "release": {
+    "tag": "waifu2x-cunet-noise0-x2-nnrt-v1",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/waifu2x-cunet-noise0-x2-nnrt-v1"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_cunet_noise0_x2_nnrt_fp16",
+  "status": "reader_device_policy_validated",
+  "artifact": {
+    "fileName": "waifu2x-cunet-noise0-x2-164-fp16.ms",
+    "bytes": 2596352,
+    "sha256": "b1863d489cd99428bf61f9d9302ef310ba72008d61621726fa480199f1bfc5b1"
+  },
+  "reference": {
+    "engine": "ncnn-vulkan",
+    "upstreamRevision": "64914665c45893135c9e50c1c296170a121b9f77",
+    "parameterSha256": "ccc3b2f1c9fad829ecdda40cac8dc853fcddf14917170efba888b256fbf9074a",
+    "weightsSha256": "5329a9375c9cfb64a60a2903fd8ae6e2851d9b069556bf025dbab9d0216fb27c"
+  },
+  "runtimeSelfTest": {
+    "input": "deterministic 1x3x164x164 FLOAT32 sequence (index mod 251) / 250",
+    "acceptance": {
+      "finite": true,
+      "minimumGreaterThan": -0.15,
+      "maximumLessThan": 1.2
+    },
+    "failurePolicy": "reject this model and accelerator pair for the process and use Vulkan"
+  },
+  "qualityBenchmark": {
+    "date": "2026-07-19",
+    "input": "retained real Reader page",
+    "sourceSize": [800, 1100],
+    "outputSize": [1600, 2200],
+    "tileCount": 63,
+    "comparisonSamples": 10560000
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "modelLoadMs": 213,
+      "averageRawPredictionMs": 28,
+      "selfTestElapsedMs": 28,
+      "selfTestRange": [-0.297607, 1.405273],
+      "runtimeDecision": "vulkan_fallback",
+      "unguardedMeanAbsoluteError": 11.747146306818182,
+      "unguardedMaximumAbsoluteError": 255,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "modelLoadMs": 211,
+      "averageRawPredictionMs": 27,
+      "selfTestElapsedMs": 26,
+      "selfTestRange": [-39.5, 38.96875],
+      "runtimeDecision": "vulkan_fallback",
+      "unguardedMeanAbsoluteError": 74.15434971590909,
+      "unguardedMaximumAbsoluteError": 255,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "modelLoadMs": 173,
+      "averageRawPredictionMs": 22,
+      "selfTestElapsedMs": 22,
+      "selfTestRange": [-0.050934, 1.05957],
+      "runtimeDecision": "nnrt",
+      "ncnnProcessElapsedMs": 9118,
+      "ncnnInferenceMs": 5875,
+      "nnrtProcessElapsedMs": 2983,
+      "nnrtInferenceMs": 1484,
+      "meanAbsoluteError": 0.06204782196969697,
+      "maximumAbsoluteError": 27,
+      "samplesOverSixtyFour": 0,
+      "passed": true
+    }
+  ],
+  "decision": "Publish the normalized FP16 model with mandatory runtime validation. Kirin 9020 passes the self-test and matches the complete Reader output while reducing the real-page process time from about nine seconds to about three seconds. The two older validated accelerators are rejected before Reader output and retain the existing Vulkan path."
+}
