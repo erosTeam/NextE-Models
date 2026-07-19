@@ -1,16 +1,27 @@
 {
   "schemaVersion": 1,
   "modelId": "espcn_x2_nnrt_fp16_luma",
-  "status": "candidate",
+  "status": "published",
   "artifact": {
     "fileName": "espcn-x2-180-fp16.ms",
     "bytes": 45312,
     "sha256": "f2e84f3ce9cfc1d326a5326c116c30b3d92a8ed91dade45c37097863e7cfc7cf"
   },
-  "deviceEvidenceRef": "../experiments/fp16-nnrt-device-matrix-20260719.json",
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "qualityEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "deviceEvidence": {
+    "scope": "full NextE Reader luminance tiling and RGB reconstruction against the pinned ncnn reference",
+    "deviceSelectors": ["103", "197", "237"],
+    "endToEndReaderValidated": true,
+    "qualityValidated": true
+  },
   "runtimeValidationRequired": false,
-  "qualityValidationRequired": true,
-  "applicationIntegrationRequired": true,
-  "applicationIntegration": "Add a dedicated luma NNRT runner and reconstruct RGB from the 2x luma output plus scaled chroma.",
-  "release": null
+  "qualityValidationRequired": false,
+  "applicationIntegrationRequired": false,
+  "applicationIntegration": "NextE runs fixed 172 px luminance tiles through NNRT, crops the 8 px output context, and reconstructs RGB over one shared bilinear 2x base.",
+  "release": {
+    "tag": "espcn-x2-nnrt-v1",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/espcn-x2-nnrt-v1"
+  }
 }

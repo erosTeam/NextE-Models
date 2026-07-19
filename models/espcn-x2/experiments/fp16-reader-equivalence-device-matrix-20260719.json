@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "modelId": "espcn_x2_nnrt_fp16_luma",
+  "status": "reader_pipeline_validated",
+  "artifact": {
+    "fileName": "espcn-x2-180-fp16.ms",
+    "bytes": 45312,
+    "sha256": "f2e84f3ce9cfc1d326a5326c116c30b3d92a8ed91dade45c37097863e7cfc7cf"
+  },
+  "reference": {
+    "engine": "ncnn-vulkan",
+    "sourcePackageSha256": "11a286a0a761ec78a4f0ec17b905d2dbe12a19263e6315a25c08c6aaf983410c",
+    "parameterFile": "espcn_x2.ncnn.param",
+    "weightFile": "espcn_x2.ncnn.bin"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "scope": "NextE luminance tiling, NNRT prediction, valid-region crop, RGB reconstruction, and complete Reader output stitching",
+    "input": "authorized retained reader page; image bytes are local-only and not tracked",
+    "sourceTracked": false,
+    "sourceSize": [800, 1100],
+    "outputSize": [1600, 2200],
+    "nnrtInputShape": [1, 1, 180, 180],
+    "nnrtOutputShape": [1, 1, 360, 360],
+    "comparisonSamples": 10560000,
+    "metric": "absolute difference over stitched RGB bytes"
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "applicationPreparationElapsedMs": 347,
+      "applicationProcessElapsedMs": 1210,
+      "eventLoopDelayP95Ms": 2,
+      "eventLoopDelayMaximumMs": 2,
+      "meanAbsoluteError": 0.20323797348484848,
+      "maximumAbsoluteError": 2,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "applicationPreparationElapsedMs": 499,
+      "applicationProcessElapsedMs": 1219,
+      "eventLoopDelayP95Ms": 1,
+      "eventLoopDelayMaximumMs": 2,
+      "meanAbsoluteError": 0.20323797348484848,
+      "maximumAbsoluteError": 2,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "applicationPreparationElapsedMs": 542,
+      "applicationProcessElapsedMs": 1141,
+      "eventLoopDelayP95Ms": 1,
+      "eventLoopDelayMaximumMs": 1,
+      "meanAbsoluteError": 0.1291716856060606,
+      "maximumAbsoluteError": 2,
+      "passed": true
+    }
+  ],
+  "decision": "Accept the FP16 artifact as the ESPCN Reader backend. Across three NPU implementations, the actual retained page stays below 0.21 mean RGB byte error and 2 maximum byte error against the pinned ncnn pipeline; the application AUTO path completes in about 1.1 to 1.3 seconds without event-loop stalls in the sampled run."
+}

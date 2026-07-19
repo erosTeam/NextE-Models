@@ -72,6 +72,15 @@ def main() -> int:
         root
         / "models/waifu2x-photo-noise0-x2/experiments/fp16-quality-equivalence-20260719.json"
     )
+    espcn_lock = load(root / "models/espcn-x2/source.lock.json")
+    espcn_candidate = load(root / "models/espcn-x2/candidates/fp16-baseline.json")
+    espcn_raw_matrix = load(
+        root / "models/espcn-x2/experiments/fp16-nnrt-device-matrix-20260719.json"
+    )
+    espcn_reader_matrix = load(
+        root
+        / "models/espcn-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
+    )
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -129,6 +138,42 @@ def main() -> int:
         waifu_quality["status"] == "quality_equivalence_validated",
         "waifu2x quality-equivalence validation has not passed",
     )
+
+    require(
+        espcn_lock["upstream"]["licenseStatus"] == "verified_for_redistribution",
+        "ESPCN redistribution license has not been verified",
+    )
+    require(espcn_lock["upstream"]["distributionLicense"] == "MIT", "unexpected Hailo license")
+    require(espcn_lock["upstream"]["modelLicense"] == "Apache-2.0", "unexpected ESPCN license")
+    require(
+        (root / "licenses/ESPCN-PyTorch-Apache-2.0.txt").is_file(),
+        "ESPCN Apache-2.0 license copy is missing",
+    )
+    espcn_contract = espcn_lock["runtimeContract"]
+    require(espcn_contract["inputShape"] == [1, 1, 180, 180], "ESPCN input shape changed")
+    require(espcn_contract["outputShape"] == [1, 1, 360, 360], "ESPCN output shape changed")
+    validate_artifact(espcn_candidate["artifact"], "ESPCN FP16 candidate")
+    validate_artifact(espcn_raw_matrix["artifact"], "ESPCN raw NNRT matrix")
+    validate_artifact(espcn_reader_matrix["artifact"], "ESPCN Reader matrix")
+    require(
+        espcn_reader_matrix["artifact"] == espcn_candidate["artifact"],
+        "ESPCN Reader evidence artifact drift",
+    )
+    validate_device_coverage(
+        espcn_candidate["deviceEvidence"]["deviceSelectors"],
+        espcn_reader_matrix["devices"],
+    )
+    for device in espcn_reader_matrix["devices"]:
+        label = f"ESPCN Reader device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: Reader benchmark did not pass")
+        require(
+            str(device["selectedAccelerator"]).startswith("NPU_"),
+            f"{label}: selected accelerator is not an enumerated NPU",
+        )
+        require(int(device["applicationProcessElapsedMs"]) > 0, f"{label}: invalid time")
+        require(float(device["meanAbsoluteError"]) < 0.3, f"{label}: mean output error too large")
+        require(int(device["maximumAbsoluteError"]) <= 2, f"{label}: maximum output error too large")
+        require(int(device["eventLoopDelayP95Ms"]) <= 2, f"{label}: event loop P95 too large")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
@@ -216,6 +261,19 @@ def main() -> int:
     require(waifu_candidate["release"] is not None, "published waifu2x candidate has no release")
     require(bool(waifu_entry["artifact"]["urls"]), "published waifu2x artifact URL missing")
 
+    espcn_entry = next(entry for entry in entries if entry["id"] == espcn_candidate["modelId"])
+    require(
+        {key: value for key, value in espcn_entry["artifact"].items() if key != "urls"}
+        == espcn_candidate["artifact"],
+        "ESPCN metadata drift",
+    )
+    require(espcn_candidate["status"] == "published", "ESPCN publication state drift")
+    require(espcn_entry["status"] == "published", "ESPCN manifest publication drift")
+    require(espcn_candidate["deviceEvidence"]["endToEndReaderValidated"] is True, "ESPCN Reader validation missing")
+    require(espcn_candidate["deviceEvidence"]["qualityValidated"] is True, "ESPCN quality validation missing")
+    require(espcn_candidate["release"] is not None, "published ESPCN candidate has no release")
+    require(bool(espcn_entry["artifact"]["urls"]), "published ESPCN artifact URL missing")
+
     require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
     require(runtime_manifest["status"] == "published", "runtime assets are not published")
     release_tag = runtime_manifest["releaseTag"]
@@ -249,7 +307,13 @@ def main() -> int:
         require(private_path in ignores, f"privacy ignore missing: {private_path}")
     notices = (root / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     require("BSD 3-Clause" in notices, "third-party license notice is missing")
-    for notice in ("waifu2x-ncnn-vulkan", "realcugan-ncnn-vulkan", "Hailo Model Zoo"):
+    for notice in (
+        "waifu2x-ncnn-vulkan",
+        "realcugan-ncnn-vulkan",
+        "Hailo Model Zoo",
+        "ESPCN-PyTorch",
+        "Apache-2.0",
+    ):
         require(notice in notices, f"third-party notice is missing: {notice}")
 
     tracked = subprocess.run(

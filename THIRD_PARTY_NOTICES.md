@@ -57,12 +57,15 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## Hailo Model Zoo ESPCN source package
+## Hailo Model Zoo ESPCN source package and ESPCN-PyTorch model
 
 The pinned ESPCN source ZIP originates from the Hailo Model Zoo:
 
 - https://github.com/hailo-ai/hailo_model_zoo
-- License: MIT
+- Hailo Model Zoo distribution license: MIT
+- Model source: https://github.com/Lornatang/ESPCN-PyTorch
+- Model license: Apache-2.0
+- Apache-2.0 license copy: `licenses/ESPCN-PyTorch-Apache-2.0.txt`
 
 Copyright (c) 2021 Hailo Technologies Ltd.
 

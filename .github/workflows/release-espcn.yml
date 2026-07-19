@@ -1,0 +1,77 @@
+name: Release ESPCN NNRT model
+
+on:
+  push:
+    tags:
+      - "espcn-x2-nnrt-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch locked inputs
+        run: |
+          python scripts/fetch_locked_source.py models/espcn-x2/source.lock.json downloads/espcn_x2.zip
+          python scripts/fetch_locked_source.py models/espcn-x2/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
+          mkdir -p work/espcn work/mindspore artifacts
+          unzip -q downloads/espcn_x2.zip -d work/espcn
+          tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+          test -x work/mindspore/tools/converter/converter/converter_lite
+      - name: Rebuild and verify immutable asset
+        run: |
+          export LD_LIBRARY_PATH="$PWD/work/mindspore/tools/converter/lib:$PWD/work/mindspore/runtime/lib"
+          work/mindspore/tools/converter/converter/converter_lite \
+            --fmk=ONNX \
+            --modelFile=work/espcn/espcn_x2_156x240.onnx \
+            --outputFile=artifacts/espcn-x2-180-fp16 \
+            --saveType=MINDIR_LITE \
+            --inputShape=input.1:1,1,180,180 \
+            --inputDataFormat=NCHW \
+            --outputDataFormat=NCHW \
+            --fp16=on
+          python scripts/verify_publishable.py --model espcn_x2_nnrt_fp16_luma --artifact artifacts/espcn-x2-180-fp16.ms
+      - uses: actions/upload-artifact@v4
+        with:
+          name: espcn-x2-180-fp16-release
+          path: artifacts/espcn-x2-180-fp16.ms
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: espcn-x2-180-fp16-release
+          path: artifacts
+      - name: Verify release metadata and artifact
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -c 'import json,os; data=json.load(open("manifests/models-v1.json")); entry=next(item for item in data["models"] if item["id"]=="espcn_x2_nnrt_fp16_luma"); expected="https://github.com/erosTeam/NextE-Models/releases/download/"+os.environ["RELEASE_TAG"]+"/"+entry["artifact"]["fileName"]; assert entry["status"]=="published"; assert entry["artifact"]["urls"]==[expected]'
+          python scripts/verify_publishable.py --model espcn_x2_nnrt_fp16_luma --artifact artifacts/espcn-x2-180-fp16.ms --tag "$RELEASE_TAG"
+      - name: Create immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            artifacts/espcn-x2-180-fp16.ms \
+            licenses/ESPCN-PyTorch-Apache-2.0.txt \
+            THIRD_PARTY_NOTICES.md \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --notes "ESPCN x2 FP16 luminance model for the NextE NNRT Reader backend. Source and redistribution notices are attached to this release."

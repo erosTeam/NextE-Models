@@ -4,7 +4,12 @@
   "upstream": {
     "repository": "https://github.com/hailo-ai/hailo_model_zoo",
     "distributionUrl": "https://hailo-model-zoo.s3.eu-west-2.amazonaws.com/SuperResolution/espcn/espcn_x2/2022-08-02/espcn_x2.zip",
-    "licenseStatus": "review_required_before_publication"
+    "revision": "a173a7a7868ea284f46864a7738a914eb6f3d1e3",
+    "distributionLicense": "MIT",
+    "modelSource": "https://github.com/Lornatang/ESPCN-PyTorch",
+    "modelLicense": "Apache-2.0",
+    "modelLicenseUrl": "https://github.com/Lornatang/ESPCN-PyTorch/blob/master/LICENSE",
+    "licenseStatus": "verified_for_redistribution"
   },
   "checkpoint": {
     "fileName": "espcn_x2.zip",
