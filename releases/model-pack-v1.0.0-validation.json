@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "releaseTag": "model-pack-v1.0.0",
+  "releaseUrl": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.0.0",
+  "releaseWorkflowRun": 29685696071,
+  "releaseAssets": {
+    "runtimeAndModelFiles": 19,
+    "manifests": 2,
+    "total": 21
+  },
+  "repositoryValidation": {
+    "workflowRun": 29685670736,
+    "passed": true
+  },
+  "applicationValidation": {
+    "date": "2026-07-19",
+    "test": "ReaderSuperResolutionModelIntegration#downloadsEverySelectableModelFromUnifiedPack",
+    "path": "remove every selectable model, download it again, verify runtime and accelerated files",
+    "devices": [
+      {
+        "deviceSelector": "103",
+        "elapsedMs": 21583,
+        "passed": true,
+        "allAssetsUsedPrimaryUrl": true
+      },
+      {
+        "deviceSelector": "197",
+        "elapsedMs": 22815,
+        "passed": true,
+        "allAssetsUsedPrimaryUrl": true
+      },
+      {
+        "deviceSelector": "237",
+        "elapsedMs": 28326,
+        "passed": true,
+        "allAssetsUsedPrimaryUrl": true
+      }
+    ]
+  }
+}
