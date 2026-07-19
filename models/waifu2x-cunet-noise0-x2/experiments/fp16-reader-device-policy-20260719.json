@@ -18,7 +18,9 @@
     "acceptance": {
       "finite": true,
       "minimumGreaterThan": -0.15,
-      "maximumLessThan": 1.2
+      "maximumLessThan": 1.2,
+      "maximumProbeErrorLessThan": 0.15,
+      "probe": "13 fixed output coordinates compared with the PyTorch reference"
     },
     "failurePolicy": "reject this model and accelerator pair for the process and use Vulkan"
   },
@@ -37,8 +39,13 @@
       "modelLoadMs": 213,
       "averageRawPredictionMs": 28,
       "selfTestElapsedMs": 28,
-      "selfTestRange": [-0.297607, 1.405273],
+      "selfTestRange": [-0.297119, 1.405273],
+      "selfTestMaximumProbeError": 0.390592,
       "runtimeDecision": "vulkan_fallback",
+      "readerPreparationElapsedMs": 8144,
+      "readerProcessElapsedMs": 10364,
+      "readerEventLoopP95DelayMs": 2,
+      "readerEventLoopMaxDelayMs": 31,
       "unguardedMeanAbsoluteError": 11.747146306818182,
       "unguardedMaximumAbsoluteError": 255,
       "passed": true
@@ -49,8 +56,13 @@
       "modelLoadMs": 211,
       "averageRawPredictionMs": 27,
       "selfTestElapsedMs": 26,
-      "selfTestRange": [-39.5, 38.96875],
+      "selfTestRange": [-0.297119, 1.405273],
+      "selfTestMaximumProbeError": 0.390592,
       "runtimeDecision": "vulkan_fallback",
+      "readerPreparationElapsedMs": 4672,
+      "readerProcessElapsedMs": 8645,
+      "readerEventLoopP95DelayMs": 2,
+      "readerEventLoopMaxDelayMs": 21,
       "unguardedMeanAbsoluteError": 74.15434971590909,
       "unguardedMaximumAbsoluteError": 255,
       "passed": true
@@ -62,7 +74,12 @@
       "averageRawPredictionMs": 22,
       "selfTestElapsedMs": 22,
       "selfTestRange": [-0.050934, 1.05957],
+      "selfTestMaximumProbeError": 0.008813,
       "runtimeDecision": "nnrt",
+      "readerPreparationElapsedMs": 491,
+      "readerProcessElapsedMs": 2251,
+      "readerEventLoopP95DelayMs": 1,
+      "readerEventLoopMaxDelayMs": 3,
       "ncnnProcessElapsedMs": 9118,
       "ncnnInferenceMs": 5875,
       "nnrtProcessElapsedMs": 2983,

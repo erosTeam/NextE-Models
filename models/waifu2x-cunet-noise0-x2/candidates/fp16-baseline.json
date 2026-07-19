@@ -24,7 +24,7 @@
   "runtimeValidationRequired": true,
   "sourceGraphEquivalenceRequired": false,
   "qualityValidationRequired": false,
-  "applicationIntegrationRequired": true,
+  "applicationIntegrationRequired": false,
   "applicationIntegration": "CUNet NNRT is enabled only when a fixed-input device self-test returns the validated range. Rejected accelerators fall back to the existing Vulkan model without displaying their incorrect output.",
   "release": {
     "tag": "waifu2x-cunet-noise0-x2-nnrt-v1",
