@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realcugan_se_2x_conservative",
+  "upstream": {
+    "repository": "https://github.com/bilibili/ailab",
+    "revision": "2799af78ef105b414cc4b796c67c8511acdcdf6f",
+    "release": "Real-CUGAN",
+    "license": "MIT",
+    "licenseStatus": "verified_for_redistribution"
+  },
+  "checkpoint": {
+    "fileName": "updated_weights.zip",
+    "url": "https://github.com/bilibili/ailab/releases/download/Real-CUGAN/updated_weights.zip",
+    "bytes": 54001450,
+    "sha256": "99a8ce2e4a6ce0548668879f148b3db3e143201d3df42c825a4143490396da53",
+    "member": "updated_weights/up2x-latest-conservative.pth",
+    "memberBytes": 5147249,
+    "memberSha256": "6cfe3b23687915d08ba96010f25198d9cfe8a683aa4131f1acf7eaa58ee1de93"
+  },
+  "source": {
+    "fileName": "upcunet_v3.py",
+    "url": "https://raw.githubusercontent.com/bilibili/ailab/2799af78ef105b414cc4b796c67c8511acdcdf6f/Real-CUGAN/upcunet_v3.py",
+    "bytes": 74531,
+    "sha256": "ef6c4e433bcac37b75ffba0a4044987ddd3ecfe7765a74a3c93887954e45562b"
+  },
+  "converter": {
+    "name": "MindSpore Lite",
+    "version": "2.7.0-rc1",
+    "platform": "linux-x64",
+    "fileName": "mindspore-lite-2.7.0rc1-linux-x64.tar.gz",
+    "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.7.0rc1/MindSpore/lite/release/linux/x86_64/mindspore-lite-2.7.0rc1-linux-x64.tar.gz",
+    "bytes": 65984666,
+    "sha256": "81a56b3eae791589ad67a63bd7bb0667872ddd2579814da78fb3dd1fd56a3e07"
+  },
+  "runtimeContract": {
+    "inputName": "input",
+    "inputDataType": "FLOAT32",
+    "inputFormat": "NCHW",
+    "inputShape": [1, 3, 178, 178],
+    "outputName": "output",
+    "outputDataType": "FLOAT32",
+    "outputFormat": "NCHW",
+    "outputShape": [1, 3, 284, 284],
+    "scale": 2,
+    "tileSize": 142,
+    "prepadding": 18,
+    "pixelRange": [0.0, 1.0],
+    "seScope": "per-tile"
+  },
+  "export": {
+    "python": "3.11",
+    "torch": "2.2.2",
+    "onnx": "1.16.0",
+    "opset": 11
+  }
+}

@@ -57,6 +57,18 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+## Real-CUGAN architecture and checkpoint
+
+The Real-CUGAN SE 2x conservative checkpoint and UpCunet architecture used by the candidate export
+originate from the official bilibili AI Lab repository and Real-CUGAN release.
+
+- Project: https://github.com/bilibili/ailab/tree/main/Real-CUGAN
+- License: MIT
+- License copy: `licenses/Real-CUGAN-MIT.txt`
+- Pinned sources: see `models/realcugan-se-2x-conservative/source.lock.json`
+
+Copyright (c) 2022 bilibili
+
 ## Hailo Model Zoo ESPCN source package and ESPCN-PyTorch model
 
 The pinned ESPCN source ZIP originates from the Hailo Model Zoo:

@@ -81,6 +81,9 @@ def main() -> int:
         root
         / "models/espcn-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
     )
+    realcugan_lock = load(
+        root / "models/realcugan-se-2x-conservative/source.lock.json"
+    )
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -174,6 +177,25 @@ def main() -> int:
         require(float(device["meanAbsoluteError"]) < 0.3, f"{label}: mean output error too large")
         require(int(device["maximumAbsoluteError"]) <= 2, f"{label}: maximum output error too large")
         require(int(device["eventLoopDelayP95Ms"]) <= 2, f"{label}: event loop P95 too large")
+
+    require(
+        realcugan_lock["upstream"]["licenseStatus"] == "verified_for_redistribution",
+        "Real-CUGAN redistribution license has not been verified",
+    )
+    require(realcugan_lock["upstream"]["license"] == "MIT", "unexpected Real-CUGAN license")
+    require(
+        (root / "licenses/Real-CUGAN-MIT.txt").is_file(),
+        "Real-CUGAN MIT license copy is missing",
+    )
+    for label in ("checkpoint", "source", "converter"):
+        entry = realcugan_lock[label]
+        require(int(entry["bytes"]) > 0, f"Real-CUGAN {label}: bytes must be positive")
+        require(bool(SHA256.fullmatch(entry["sha256"])), f"Real-CUGAN {label}: invalid SHA-256")
+        require(str(entry["url"]).startswith("https://"), f"Real-CUGAN {label}: HTTPS URL required")
+    realcugan_contract = realcugan_lock["runtimeContract"]
+    require(realcugan_contract["inputShape"] == [1, 3, 178, 178], "Real-CUGAN input shape changed")
+    require(realcugan_contract["outputShape"] == [1, 3, 284, 284], "Real-CUGAN output shape changed")
+    require(realcugan_contract["seScope"] == "per-tile", "Real-CUGAN SE scope changed")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
@@ -313,6 +335,7 @@ def main() -> int:
         "Hailo Model Zoo",
         "ESPCN-PyTorch",
         "Apache-2.0",
+        "Real-CUGAN architecture and checkpoint",
     ):
         require(notice in notices, f"third-party notice is missing: {notice}")
 
