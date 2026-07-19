@@ -40,18 +40,18 @@ jobs:
           python scripts/export_realcugan_se_2x_conservative_onnx.py \
             --checkpoint work/realcugan/updated_weights/up2x-latest-conservative.pth \
             --source downloads/upcunet_v3.py \
-            --output work/realcugan-se-2x-conservative-178.onnx
+            --output work/realcugan-se-2x-conservative-164.onnx
           python scripts/convert_mindspore.py \
             --converter work/mindspore/tools/converter/converter/converter_lite \
-            --onnx work/realcugan-se-2x-conservative-178.onnx \
-            --output artifacts/realcugan-se-2x-conservative-178-fp16.ms \
-            --input-shape 1,3,178,178 \
+            --onnx work/realcugan-se-2x-conservative-164.onnx \
+            --output artifacts/realcugan-se-2x-conservative-164-fp16.ms \
+            --input-shape 1,3,164,164 \
             --mode fp16
       - uses: actions/upload-artifact@v4
         with:
-          name: realcugan-se-2x-conservative-178-fp16-candidate
+          name: realcugan-se-2x-conservative-164-fp16-candidate
           path: |
-            artifacts/realcugan-se-2x-conservative-178-fp16.ms
-            artifacts/realcugan-se-2x-conservative-178-fp16.ms.candidate.json
-            work/realcugan-se-2x-conservative-178.onnx
+            artifacts/realcugan-se-2x-conservative-164-fp16.ms
+            artifacts/realcugan-se-2x-conservative-164-fp16.ms.candidate.json
+            work/realcugan-se-2x-conservative-164.onnx
           if-no-files-found: error

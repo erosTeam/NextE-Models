@@ -148,14 +148,14 @@ def export_probe(module: nn.Module, shape: tuple[int, ...], output: Path, opset:
     print(f"probe={output.name} shape={shape} bytes={output.stat().st_size} sha256={sha256(output)}")
 
 
-def replace_se_means(model: nn.Module) -> None:
-    # Fixed feature sizes derive from the locked 178 px input contract. AveragePool is
+def replace_se_means(model: nn.Module, feature_sizes: list[int]) -> None:
+    # Fixed feature sizes derive from the locked input contract. AveragePool is
     # mathematically equivalent to ReduceMean here and maps through a distinct NNRT operator path.
     replacements = (
-        (model.unet1.conv2, 83),
-        (model.unet2.conv2, 156),
-        (model.unet2.conv3, 74),
-        (model.unet2.conv4, 144),
+        (model.unet1.conv2, feature_sizes[0]),
+        (model.unet2.conv2, feature_sizes[1]),
+        (model.unet2.conv3, feature_sizes[2]),
+        (model.unet2.conv4, feature_sizes[3]),
     )
     for block, feature_size in replacements:
         block.seblock = FixedAveragePoolSE(block.seblock, feature_size)
@@ -204,7 +204,7 @@ def main() -> int:
     tile = UpstreamRealCuganTile(model).eval()
     with torch.no_grad():
         reference_output = tile(sample)
-    replace_se_means(model)
+    replace_se_means(model, [int(value) for value in contract["seFeatureSizes"]])
     tile = RealCuganTile(model).eval()
     with torch.no_grad():
         output = tile(sample)
@@ -244,18 +244,18 @@ def main() -> int:
         args.probe_directory.mkdir(parents=True, exist_ok=True)
         opset = int(lock["export"]["opset"])
         probes: tuple[tuple[str, nn.Module, tuple[int, ...]], ...] = (
-            ("slice", SliceProbe(), (1, 3, 178, 178)),
-            ("se83", model.unet1.conv2.seblock, (1, 64, 83, 83)),
-            ("stride2-conv", model.unet1.conv1_down, (1, 64, 174, 174)),
-            ("deconv2", model.unet1.conv2_up, (1, 64, 83, 83)),
-            ("deconv4", model.unet1.conv_bottom, (1, 64, 164, 164)),
-            ("u1-conv1", Unet1CumulativeProbe(model.unet1, "conv1"), (1, 3, 178, 178)),
-            ("u1-se", Unet1CumulativeProbe(model.unet1, "se"), (1, 3, 178, 178)),
-            ("u1-add", Unet1CumulativeProbe(model.unet1, "add"), (1, 3, 178, 178)),
-            ("u1-conv3", Unet1CumulativeProbe(model.unet1, "conv3"), (1, 3, 178, 178)),
-            ("u1-output", Unet1CumulativeProbe(model.unet1, "output"), (1, 3, 178, 178)),
-            ("unet1", model.unet1, (1, 3, 178, 178)),
-            ("unet2", model.unet2, (1, 3, 324, 324)),
+            ("slice", SliceProbe(), (1, 3, 164, 164)),
+            ("se76", model.unet1.conv2.seblock, (1, 64, 76, 76)),
+            ("stride2-conv", model.unet1.conv1_down, (1, 64, 160, 160)),
+            ("deconv2", model.unet1.conv2_up, (1, 64, 76, 76)),
+            ("deconv4", model.unet1.conv_bottom, (1, 64, 150, 150)),
+            ("u1-conv1", Unet1CumulativeProbe(model.unet1, "conv1"), (1, 3, 164, 164)),
+            ("u1-se", Unet1CumulativeProbe(model.unet1, "se"), (1, 3, 164, 164)),
+            ("u1-add", Unet1CumulativeProbe(model.unet1, "add"), (1, 3, 164, 164)),
+            ("u1-conv3", Unet1CumulativeProbe(model.unet1, "conv3"), (1, 3, 164, 164)),
+            ("u1-output", Unet1CumulativeProbe(model.unet1, "output"), (1, 3, 164, 164)),
+            ("unet1", model.unet1, (1, 3, 164, 164)),
+            ("unet2", model.unet2, (1, 3, 296, 296)),
         )
         for name, module, shape in probes:
             export_probe(module, shape, args.probe_directory / f"{name}.onnx", opset)

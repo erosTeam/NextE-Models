@@ -193,8 +193,9 @@ def main() -> int:
         require(bool(SHA256.fullmatch(entry["sha256"])), f"Real-CUGAN {label}: invalid SHA-256")
         require(str(entry["url"]).startswith("https://"), f"Real-CUGAN {label}: HTTPS URL required")
     realcugan_contract = realcugan_lock["runtimeContract"]
-    require(realcugan_contract["inputShape"] == [1, 3, 178, 178], "Real-CUGAN input shape changed")
-    require(realcugan_contract["outputShape"] == [1, 3, 284, 284], "Real-CUGAN output shape changed")
+    require(realcugan_contract["inputShape"] == [1, 3, 164, 164], "Real-CUGAN input shape changed")
+    require(realcugan_contract["outputShape"] == [1, 3, 256, 256], "Real-CUGAN output shape changed")
+    require(realcugan_contract["tileSize"] == 128, "Real-CUGAN tile size changed")
     require(realcugan_contract["seScope"] == "per-tile", "Real-CUGAN SE scope changed")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
