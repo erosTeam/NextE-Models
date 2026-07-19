@@ -1,4 +1,5 @@
 # Export environment used by the current Real-ESRGAN x2plus baseline.
+numpy==1.26.4
 torch==2.2.2
 onnx==1.16.0
 Pillow==10.4.0
