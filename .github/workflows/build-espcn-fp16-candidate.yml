@@ -1,0 +1,43 @@
+name: Build ESPCN FP16 candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch locked inputs
+        run: |
+          python scripts/fetch_locked_source.py models/espcn-x2/source.lock.json downloads/espcn_x2.zip
+          python scripts/fetch_locked_source.py models/espcn-x2/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
+          mkdir -p work/espcn work/mindspore artifacts
+          unzip -q downloads/espcn_x2.zip -d work/espcn
+          tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+      - name: Convert and verify
+        run: |
+          export LD_LIBRARY_PATH="$PWD/work/mindspore/tools/converter/lib:$PWD/work/mindspore/runtime/lib"
+          work/mindspore/tools/converter/converter/converter_lite \
+            --fmk=ONNX \
+            --modelFile=work/espcn/espcn_x2_156x240.onnx \
+            --outputFile=artifacts/espcn-x2-180-fp16 \
+            --saveType=MINDIR_LITE \
+            --inputShape=input.1:1,1,180,180 \
+            --inputDataFormat=NCHW \
+            --outputDataFormat=NCHW \
+            --fp16=on
+          python scripts/verify_publishable.py \
+            --model espcn_x2_nnrt_fp16_luma \
+            --artifact artifacts/espcn-x2-180-fp16.ms
+      - uses: actions/upload-artifact@v4
+        with:
+          name: espcn-x2-180-fp16-candidate
+          path: artifacts/espcn-x2-180-fp16.ms
+          if-no-files-found: error

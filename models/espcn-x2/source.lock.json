@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "modelId": "espcn_x2",
+  "upstream": {
+    "repository": "https://github.com/hailo-ai/hailo_model_zoo",
+    "distributionUrl": "https://hailo-model-zoo.s3.eu-west-2.amazonaws.com/SuperResolution/espcn/espcn_x2/2022-08-02/espcn_x2.zip",
+    "licenseStatus": "review_required_before_publication"
+  },
+  "checkpoint": {
+    "fileName": "espcn_x2.zip",
+    "url": "https://hailo-model-zoo.s3.eu-west-2.amazonaws.com/SuperResolution/espcn/espcn_x2/2022-08-02/espcn_x2.zip",
+    "bytes": 80589,
+    "sha256": "11a286a0a761ec78a4f0ec17b905d2dbe12a19263e6315a25c08c6aaf983410c"
+  },
+  "sourceOnnx": {
+    "fileName": "espcn_x2_156x240.onnx",
+    "bytes": 86056,
+    "sha256": "6004f76f2699323e72186dae30f5e611dfb58478109391391bbc003dfbab950e",
+    "inputName": "input.1"
+  },
+  "converter": {
+    "name": "MindSpore Lite",
+    "version": "2.7.0-rc1",
+    "platform": "linux-x64",
+    "fileName": "mindspore-lite-2.7.0rc1-linux-x64.tar.gz",
+    "url": "https://ms-release.obs.cn-north-4.myhuaweicloud.com/2.7.0rc1/MindSpore/lite/release/linux/x86_64/mindspore-lite-2.7.0rc1-linux-x64.tar.gz",
+    "bytes": 65984666,
+    "sha256": "81a56b3eae791589ad67a63bd7bb0667872ddd2579814da78fb3dd1fd56a3e07"
+  },
+  "runtimeContract": {
+    "inputName": "input.1",
+    "inputDataType": "FLOAT32",
+    "inputFormat": "NCHW",
+    "inputShape": [1, 1, 180, 180],
+    "outputDataType": "FLOAT32",
+    "outputFormat": "NCHW",
+    "outputShape": [1, 1, 360, 360],
+    "scale": 2,
+    "channel": "luma"
+  }
+}

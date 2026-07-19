@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "modelId": "espcn_x2_nnrt_fp16_luma",
+  "status": "raw_nnrt_validated",
+  "artifact": {
+    "fileName": "espcn-x2-180-fp16.ms",
+    "bytes": 45312,
+    "sha256": "f2e84f3ce9cfc1d326a5326c116c30b3d92a8ed91dade45c37097863e7cfc7cf"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "inputShape": [1, 1, 180, 180],
+    "outputShape": [1, 1, 360, 360],
+    "predictionCount": 3,
+    "performanceMode": "PERFORMANCE_HIGH",
+    "priority": "PRIORITY_LOW"
+  },
+  "cpuControl": {
+    "deviceSelector": "103",
+    "loadPassed": true,
+    "predictionPassed": true
+  },
+  "devices": [
+    { "deviceSelector": "103", "testConsumingMs": 276, "passed": true },
+    { "deviceSelector": "197", "testConsumingMs": 210, "passed": true },
+    { "deviceSelector": "237", "testConsumingMs": 249, "passed": true }
+  ],
+  "decision": "Keep as an unpublished integration candidate. The 180x180 FP16 graph loads and predicts through NNRT on all three tested NPU implementations, but the app still needs a luma and chroma reconstruction pipeline plus end-to-end quality validation."
+}
