@@ -57,6 +57,13 @@ def main() -> int:
     experiment = load(root / "models/realesrgan-x2plus/experiments/weight-int8-device-103.json")
     manifest = load(root / "manifests/models-v1.json")
     runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
+    waifu_lock = load(root / "models/waifu2x-photo-noise0-x2/source.lock.json")
+    waifu_candidate = load(
+        root / "models/waifu2x-photo-noise0-x2/candidates/fp16-baseline.json"
+    )
+    waifu_matrix = load(
+        root / "models/waifu2x-photo-noise0-x2/experiments/fp16-nnrt-device-matrix-20260719.json"
+    )
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -69,6 +76,31 @@ def main() -> int:
     require(contract["outputShape"] == [1, 3, 360, 360], "locked output shape changed")
     require(contract["inputFormat"] == "NCHW", "locked input format changed")
     require(contract["inputDataType"] == "FLOAT32", "locked input type changed")
+
+    require(waifu_lock["upstream"]["license"] == "MIT", "unexpected waifu2x license")
+    for label in ("parameter", "weights", "converter"):
+        entry = waifu_lock[label]
+        require(int(entry["bytes"]) > 0, f"waifu2x {label}: bytes must be positive")
+        require(bool(SHA256.fullmatch(entry["sha256"])), f"waifu2x {label}: invalid SHA-256")
+        require(str(entry["url"]).startswith("https://"), f"waifu2x {label}: HTTPS URL required")
+    waifu_contract = waifu_lock["runtimeContract"]
+    require(waifu_contract["inputShape"] == [1, 3, 156, 156], "waifu2x input shape changed")
+    require(waifu_contract["outputShape"] == [1, 3, 284, 284], "waifu2x output shape changed")
+    validate_artifact(waifu_candidate["artifact"], "waifu2x FP16 candidate")
+    validate_artifact(waifu_matrix["artifact"], "waifu2x FP16 device matrix")
+    require(
+        waifu_matrix["artifact"] == waifu_candidate["artifact"],
+        "waifu2x FP16 device evidence artifact drift",
+    )
+    validate_device_coverage(["103", "197", "237"], waifu_matrix["devices"])
+    for device in waifu_matrix["devices"]:
+        label = f"waifu2x FP16 device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: benchmark did not pass")
+        require(
+            str(device["selectedAccelerator"]).startswith("NPU_"),
+            f"{label}: selected accelerator is not an enumerated NPU",
+        )
+        require(int(device["averagePredictionMs"]) > 0, f"{label}: invalid prediction time")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
@@ -142,6 +174,15 @@ def main() -> int:
     else:
         require(candidate["release"] is None, "candidate must not claim a release")
         require(fp16_entry["status"] == "candidate", "manifest candidate state drift")
+
+    waifu_entry = next(entry for entry in entries if entry["id"] == waifu_candidate["modelId"])
+    require(waifu_entry["status"] == "candidate", "waifu2x candidate publication drift")
+    require(not waifu_entry["artifact"]["urls"], "waifu2x candidate must not expose URLs")
+    require(
+        {key: value for key, value in waifu_entry["artifact"].items() if key != "urls"}
+        == waifu_candidate["artifact"],
+        "waifu2x candidate metadata drift",
+    )
 
     require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
     require(runtime_manifest["status"] == "published", "runtime assets are not published")

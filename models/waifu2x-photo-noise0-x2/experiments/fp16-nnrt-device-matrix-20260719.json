@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_photo_noise0_x2_nnrt_fp16",
+  "status": "raw_nnrt_validated",
+  "artifact": {
+    "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "dca73d6417bfbdf482dbdcd3390de5fd59a9794ecb9c3d8752aede012ac22e53"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "inputShape": [1, 3, 156, 156],
+    "outputShape": [1, 3, 284, 284],
+    "predictionCount": 3,
+    "performanceMode": "PERFORMANCE_HIGH",
+    "priority": "PRIORITY_LOW"
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "modelLoadMs": 141,
+      "firstPredictionMs": 17,
+      "totalPredictionMs": 45,
+      "averagePredictionMs": 15,
+      "outputMinimum": -0.61181640625,
+      "outputMaximum": 0.794921875,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "modelLoadMs": 107,
+      "firstPredictionMs": 20,
+      "totalPredictionMs": 51,
+      "averagePredictionMs": 17,
+      "outputMinimum": -0.61181640625,
+      "outputMaximum": 0.794921875,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "modelLoadMs": 153,
+      "firstPredictionMs": 21,
+      "totalPredictionMs": 56,
+      "averagePredictionMs": 19,
+      "outputMinimum": -0.611328125,
+      "outputMaximum": 0.7958984375,
+      "passed": true
+    }
+  ],
+  "decision": "Keep as an unpublished integration candidate. The fixed-shape FP16 graph loads and predicts through NNRT on all three tested NPU implementations. Publication still requires graph-equivalence, complete Reader tiling, and actual-page quality validation."
+}

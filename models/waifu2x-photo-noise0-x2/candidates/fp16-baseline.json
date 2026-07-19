@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_photo_noise0_x2_nnrt_fp16",
+  "status": "candidate",
+  "sourceOnnx": {
+    "fileName": "waifu2x-photo-noise0-x2-156.onnx",
+    "bytes": 2212864,
+    "sha256": "329725ac4021720daf6c1e80b97c95a801e8939fdef1b7f129ababb4a8f9b5d4"
+  },
+  "artifact": {
+    "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "dca73d6417bfbdf482dbdcd3390de5fd59a9794ecb9c3d8752aede012ac22e53"
+  },
+  "deviceEvidenceRef": "../experiments/fp16-nnrt-device-matrix-20260719.json",
+  "runtimeValidationRequired": false,
+  "sourceGraphEquivalenceRequired": true,
+  "qualityValidationRequired": true,
+  "applicationIntegrationRequired": true,
+  "applicationIntegration": "Add fixed-shape RGB tile execution, crop the valid 2x region, and compare complete Reader output against the existing ncnn path before publication.",
+  "release": null
+}

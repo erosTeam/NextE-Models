@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/build-waifu2x-photo-fp16-candidate.yml"
-      - "models/waifu2x-photo-noise0-x2/**"
+      - "models/waifu2x-photo-noise0-x2/source.lock.json"
       - "scripts/convert_mindspore.py"
       - "scripts/export_waifu2x_photo_noise0_x2_onnx.py"
       - "scripts/fetch_locked_source.py"
