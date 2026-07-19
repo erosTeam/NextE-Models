@@ -73,13 +73,15 @@
       "id": "waifu2x_photo_noise0_x2_nnrt_fp16",
       "displayName": "waifu2x photo noise0 2x",
       "variant": "fp16",
-      "status": "candidate",
+      "status": "published",
       "scale": 2,
       "artifact": {
         "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
         "bytes": 1110528,
-        "sha256": "dca73d6417bfbdf482dbdcd3390de5fd59a9794ecb9c3d8752aede012ac22e53",
-        "urls": []
+        "sha256": "f39e877d84c3555e2150f63098fe0e21c6d426c7e054a5a32f2371d5e5f8e2c9",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/waifu2x-photo-noise0-x2-nnrt-v1/waifu2x-photo-noise0-x2-156-fp16.ms"
+        ]
       },
       "runtime": {
         "engine": "mindspore-lite-nnrt",

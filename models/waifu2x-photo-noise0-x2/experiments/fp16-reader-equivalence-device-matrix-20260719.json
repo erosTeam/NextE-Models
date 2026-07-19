@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_photo_noise0_x2_nnrt_fp16",
+  "status": "reader_pipeline_validated",
+  "artifact": {
+    "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "f39e877d84c3555e2150f63098fe0e21c6d426c7e054a5a32f2371d5e5f8e2c9"
+  },
+  "reference": {
+    "engine": "ncnn-vulkan",
+    "upstreamRevision": "64914665c45893135c9e50c1c296170a121b9f77",
+    "parameterSha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
+    "weightsSha256": "fbfc8d57e4333748c9c6db2ec4d5454c98cd1c6aa53289f2989c3bdb4e84b673"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "scope": "NextE native tiling, model prediction, valid-region crop, and complete RGB output stitching",
+    "input": "deterministic generated RGBA reader page",
+    "sourceSize": [800, 1149],
+    "outputSize": [1600, 2298],
+    "tileCount": 54,
+    "ncnnTileSize": 142,
+    "ncnnShrinkSize": 7,
+    "nnrtInputShape": [1, 3, 156, 156],
+    "nnrtOutputShape": [1, 3, 284, 284],
+    "comparisonSamples": 11030400,
+    "metric": "absolute difference over stitched RGB bytes"
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "ncnnProcessElapsedMs": 9012,
+      "ncnnInferenceMs": 4487,
+      "nnrtProcessElapsedMs": 2998,
+      "nnrtInferenceMs": 928,
+      "meanAbsoluteError": 0.25693555990716566,
+      "maximumAbsoluteError": 3,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "ncnnProcessElapsedMs": 8951,
+      "ncnnInferenceMs": 3932,
+      "nnrtProcessElapsedMs": 2999,
+      "nnrtInferenceMs": 848,
+      "meanAbsoluteError": 0.25693555990716566,
+      "maximumAbsoluteError": 3,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "ncnnProcessElapsedMs": 9105,
+      "ncnnInferenceMs": 3267,
+      "nnrtProcessElapsedMs": 3000,
+      "nnrtInferenceMs": 1086,
+      "meanAbsoluteError": 0.2760283398607485,
+      "maximumAbsoluteError": 4,
+      "passed": true
+    }
+  ],
+  "decision": "Accept the corrected FP16 artifact for replacing the same waifu2x model's ncnn backend. Across three NPU implementations, the complete stitched Reader output stays below 0.3 mean RGB byte error and 4 maximum byte error while process time drops from about 9 seconds to about 3 seconds."
+}

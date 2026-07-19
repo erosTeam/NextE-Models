@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "modelId": "waifu2x_photo_noise0_x2_nnrt_fp16",
-  "status": "raw_nnrt_validated",
+  "status": "superseded",
   "artifact": {
     "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
     "bytes": 1110528,
@@ -50,5 +50,6 @@
       "passed": true
     }
   ],
-  "decision": "Keep as an unpublished integration candidate. The fixed-shape FP16 graph loads and predicts through NNRT on all three tested NPU implementations. Publication still requires graph-equivalence, complete Reader tiling, and actual-page quality validation."
+  "supersededBy": "fp16-reader-equivalence-device-matrix-20260719.json",
+  "decision": "Do not use this artifact. Raw NNRT execution passed, but full-pipeline comparison exposed an incorrect ncnn Deconvolution-to-ConvTranspose weight layout. The record is retained without relabelling its measurements; the corrected artifact has separate full Reader evidence."
 }

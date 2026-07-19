@@ -64,6 +64,14 @@ def main() -> int:
     waifu_matrix = load(
         root / "models/waifu2x-photo-noise0-x2/experiments/fp16-nnrt-device-matrix-20260719.json"
     )
+    waifu_reader_matrix = load(
+        root
+        / "models/waifu2x-photo-noise0-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
+    )
+    waifu_quality = load(
+        root
+        / "models/waifu2x-photo-noise0-x2/experiments/fp16-quality-equivalence-20260719.json"
+    )
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -88,19 +96,39 @@ def main() -> int:
     require(waifu_contract["outputShape"] == [1, 3, 284, 284], "waifu2x output shape changed")
     validate_artifact(waifu_candidate["artifact"], "waifu2x FP16 candidate")
     validate_artifact(waifu_matrix["artifact"], "waifu2x FP16 device matrix")
+    validate_artifact(waifu_reader_matrix["artifact"], "waifu2x FP16 Reader matrix")
+    validate_artifact(waifu_quality["artifact"], "waifu2x FP16 quality equivalence")
     require(
-        waifu_matrix["artifact"] == waifu_candidate["artifact"],
-        "waifu2x FP16 device evidence artifact drift",
+        waifu_matrix["status"] == "superseded",
+        "incorrect waifu2x raw candidate must remain superseded",
     )
-    validate_device_coverage(["103", "197", "237"], waifu_matrix["devices"])
-    for device in waifu_matrix["devices"]:
-        label = f"waifu2x FP16 device {device['deviceSelector']}"
-        require(device["passed"] is True, f"{label}: benchmark did not pass")
+    require(
+        waifu_reader_matrix["artifact"] == waifu_candidate["artifact"],
+        "waifu2x FP16 Reader evidence artifact drift",
+    )
+    validate_device_coverage(
+        waifu_candidate["deviceEvidence"]["deviceSelectors"],
+        waifu_reader_matrix["devices"],
+    )
+    for device in waifu_reader_matrix["devices"]:
+        label = f"waifu2x FP16 Reader device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: Reader benchmark did not pass")
         require(
             str(device["selectedAccelerator"]).startswith("NPU_"),
             f"{label}: selected accelerator is not an enumerated NPU",
         )
-        require(int(device["averagePredictionMs"]) > 0, f"{label}: invalid prediction time")
+        require(int(device["nnrtProcessElapsedMs"]) > 0, f"{label}: invalid NNRT process time")
+        require(int(device["ncnnProcessElapsedMs"]) > 0, f"{label}: invalid ncnn process time")
+        require(float(device["meanAbsoluteError"]) < 0.3, f"{label}: mean output error too large")
+        require(int(device["maximumAbsoluteError"]) <= 4, f"{label}: maximum output error too large")
+    require(
+        waifu_quality["artifact"] == waifu_candidate["artifact"],
+        "waifu2x quality artifact does not match the candidate",
+    )
+    require(
+        waifu_quality["status"] == "quality_equivalence_validated",
+        "waifu2x quality-equivalence validation has not passed",
+    )
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
@@ -176,13 +204,17 @@ def main() -> int:
         require(fp16_entry["status"] == "candidate", "manifest candidate state drift")
 
     waifu_entry = next(entry for entry in entries if entry["id"] == waifu_candidate["modelId"])
-    require(waifu_entry["status"] == "candidate", "waifu2x candidate publication drift")
-    require(not waifu_entry["artifact"]["urls"], "waifu2x candidate must not expose URLs")
     require(
         {key: value for key, value in waifu_entry["artifact"].items() if key != "urls"}
         == waifu_candidate["artifact"],
-        "waifu2x candidate metadata drift",
+        "waifu2x metadata drift",
     )
+    require(waifu_candidate["status"] == "published", "waifu2x publication state drift")
+    require(waifu_entry["status"] == "published", "waifu2x manifest publication drift")
+    require(waifu_candidate["deviceEvidence"]["endToEndReaderValidated"] is True, "waifu2x Reader validation missing")
+    require(waifu_candidate["deviceEvidence"]["qualityValidated"] is True, "waifu2x quality equivalence missing")
+    require(waifu_candidate["release"] is not None, "published waifu2x candidate has no release")
+    require(bool(waifu_entry["artifact"]["urls"]), "published waifu2x artifact URL missing")
 
     require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
     require(runtime_manifest["status"] == "published", "runtime assets are not published")

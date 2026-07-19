@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_photo_noise0_x2_nnrt_fp16",
+  "status": "quality_equivalence_validated",
+  "artifact": {
+    "fileName": "waifu2x-photo-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "f39e877d84c3555e2150f63098fe0e21c6d426c7e054a5a32f2371d5e5f8e2c9"
+  },
+  "evaluation": {
+    "date": "2026-07-19",
+    "source": "deterministic generated RGBA reader page",
+    "sourceTracked": false,
+    "sourceSize": [800, 1149],
+    "outputSize": [1600, 2298],
+    "reference": "the existing pinned waifu2x photo noise0 2x ncnn model through the same NextE Reader tiling contract",
+    "deviceSelectors": ["103", "197", "237"],
+    "maximumMeanAbsoluteError": 0.2760283398607485,
+    "maximumAbsoluteError": 4
+  },
+  "decision": "Accept as a backend-equivalence gate, not as a claim that a new model improves perceptual quality. The NNRT artifact reproduces the existing ncnn model output within sub-byte mean RGB error after complete Reader tiling and stitching."
+}
