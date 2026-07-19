@@ -33,6 +33,12 @@ jobs:
           python scripts/fetch_locked_source.py models/waifu2x-photo-noise0-x2/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
           mkdir -p work/mindspore
           tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+          if [[ ! -x work/mindspore/tools/converter/converter/converter_lite ]]; then
+            rm -rf work/mindspore
+            mkdir -p work/mindspore
+            tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+          fi
+          test -x work/mindspore/tools/converter/converter/converter_lite
       - name: Rebuild and verify immutable asset
         env:
           RELEASE_TAG: ${{ github.ref_name }}
