@@ -52,6 +52,35 @@ class RealCuganTile(nn.Module):
         return second + first[:, :, 20:-20, 20:-20]
 
 
+class FixedAveragePoolSE(nn.Module):
+    """SE gate with an explicit fixed AveragePool operator for NNRT lowering."""
+
+    def __init__(self, source: nn.Module, feature_size: int) -> None:
+        super().__init__()
+        self.pool = nn.AvgPool2d(kernel_size=feature_size)
+        self.conv1 = source.conv1
+        self.conv2 = source.conv2
+
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        gate = self.pool(value)
+        gate = torch.relu(self.conv1(gate))
+        gate = torch.sigmoid(self.conv2(gate))
+        return value * gate
+
+
+def replace_se_means(model: nn.Module) -> None:
+    # Fixed feature sizes derive from the locked 178 px input contract. AveragePool is
+    # mathematically equivalent to ReduceMean here and maps through a distinct NNRT operator path.
+    replacements = (
+        (model.unet1.conv2, 83),
+        (model.unet2.conv2, 156),
+        (model.unet2.conv3, 74),
+        (model.unet2.conv4, 144),
+    )
+    for block, feature_size in replacements:
+        block.seblock = FixedAveragePoolSE(block.seblock, feature_size)
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser()
@@ -84,7 +113,6 @@ def main() -> int:
     model = load_upcunet(args.source)().eval()
     state = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
     model.load_state_dict(state, strict=True)
-    tile = RealCuganTile(model).eval()
     contract = lock["runtimeContract"]
     sample = torch.linspace(
         0.0,
@@ -92,8 +120,18 @@ def main() -> int:
         steps=int(np.prod(contract["inputShape"])),
         dtype=torch.float32,
     ).reshape(contract["inputShape"])
+    tile = RealCuganTile(model).eval()
+    with torch.no_grad():
+        reference_output = tile(sample)
+    replace_se_means(model)
+    tile = RealCuganTile(model).eval()
     with torch.no_grad():
         output = tile(sample)
+    maximum_rewrite_error = float(torch.max(torch.abs(output - reference_output)))
+    if maximum_rewrite_error > 1.0e-6:
+        raise RuntimeError(
+            f"fixed AveragePool SE rewrite changed output by {maximum_rewrite_error}"
+        )
     expected_shape = tuple(int(value) for value in contract["outputShape"])
     if tuple(output.shape) != expected_shape:
         raise RuntimeError(f"unexpected output shape {tuple(output.shape)}, expected {expected_shape}")
@@ -116,7 +154,8 @@ def main() -> int:
     print(
         f"exported={args.output.resolve()} bytes={args.output.stat().st_size} "
         f"sha256={sha256(args.output)} nodes={len(exported.graph.node)} "
-        f"outputRange={float(output.min()):.9g}..{float(output.max()):.9g}"
+        f"outputRange={float(output.min()):.9g}..{float(output.max()):.9g} "
+        f"maximumRewriteError={maximum_rewrite_error:.9g}"
     )
     return 0
 

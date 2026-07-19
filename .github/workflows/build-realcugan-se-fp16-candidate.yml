@@ -53,4 +53,5 @@ jobs:
           path: |
             artifacts/realcugan-se-2x-conservative-178-fp16.ms
             artifacts/realcugan-se-2x-conservative-178-fp16.ms.candidate.json
+            work/realcugan-se-2x-conservative-178.onnx
           if-no-files-found: error
