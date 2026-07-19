@@ -38,6 +38,11 @@
       "meanAbsoluteError": 0.09461051136363637,
       "maximumAbsoluteError": 2,
       "samplesOverFour": 0,
+      "applicationBackend": "nnrt",
+      "applicationPreparationElapsedMs": 413,
+      "applicationProcessElapsedMs": 1730,
+      "eventLoopDelayP95Ms": 1,
+      "eventLoopDelayMaxMs": 4,
       "passed": true
     },
     {
@@ -50,6 +55,11 @@
       "meanAbsoluteError": 0.09461051136363637,
       "maximumAbsoluteError": 2,
       "samplesOverFour": 0,
+      "applicationBackend": "nnrt",
+      "applicationPreparationElapsedMs": 565,
+      "applicationProcessElapsedMs": 1754,
+      "eventLoopDelayP95Ms": 2,
+      "eventLoopDelayMaxMs": 2,
       "passed": true
     },
     {
@@ -62,8 +72,13 @@
       "meanAbsoluteError": 0.3389255681818182,
       "maximumAbsoluteError": 2,
       "samplesOverFour": 0,
+      "applicationBackend": "nnrt",
+      "applicationPreparationElapsedMs": 581,
+      "applicationProcessElapsedMs": 1881,
+      "eventLoopDelayP95Ms": 1,
+      "eventLoopDelayMaxMs": 2,
       "passed": true
     }
   ],
-  "decision": "Accept the FP16 artifact for replacing the same waifu2x art model's ncnn backend. On a retained 800x1100 Reader page, all three NPU implementations stay within two RGB byte values of the reference with no samples above four while process time drops to about three seconds."
+  "decision": "Accept the FP16 artifact for replacing the same waifu2x art model's ncnn backend. On a retained 800x1100 Reader page, all three NPU implementations stay within two RGB byte values of the reference with no samples above four. The published-download application path selects NNRT and processes the standard 800x1149 page in about two seconds with event-loop P95 delay at or below two milliseconds."
 }
