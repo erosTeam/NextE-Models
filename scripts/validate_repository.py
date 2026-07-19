@@ -48,6 +48,12 @@ def main() -> int:
     matrix = load(
         root / "models/realesrgan-x2plus/experiments/fp16-device-matrix-20260719.json"
     )
+    reader_matrix = load(
+        root / "models/realesrgan-x2plus/experiments/fp16-reader-device-matrix-20260719.json"
+    )
+    quality = load(
+        root / "models/realesrgan-x2plus/experiments/fp16-quality-validation-20260719.json"
+    )
     experiment = load(root / "models/realesrgan-x2plus/experiments/weight-int8-device-103.json")
     manifest = load(root / "manifests/models-v1.json")
 
@@ -65,9 +71,10 @@ def main() -> int:
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
+    validate_artifact(reader_matrix["artifact"], "fp16 Reader device matrix")
+    validate_artifact(quality["artifact"], "fp16 quality validation")
     validate_artifact(experiment["artifact"], "weight INT8 experiment")
-    require(candidate["status"] == "candidate", "baseline must remain a candidate before release")
-    require(candidate["release"] is None, "candidate must not claim a release")
+    require(candidate["status"] in {"candidate", "published"}, "unsupported baseline status")
     require(
         matrix["artifact"] == candidate["artifact"],
         "FP16 device matrix artifact does not match the candidate",
@@ -85,6 +92,17 @@ def main() -> int:
             f"{label}: selected accelerator is not an enumerated NPU",
         )
         require(int(device["totalPredictionMs"]) > 0, f"{label}: invalid prediction time")
+    require(
+        reader_matrix["artifact"] == candidate["artifact"],
+        "FP16 Reader device matrix artifact does not match the candidate",
+    )
+    validate_device_coverage(candidate["deviceEvidence"]["deviceSelectors"], reader_matrix["devices"])
+    for device in reader_matrix["devices"]:
+        require(device["passed"] is True, f"Reader device {device['deviceSelector']}: benchmark did not pass")
+        require(int(device["processElapsedMs"]) > 0, f"Reader device {device['deviceSelector']}: invalid time")
+    require(quality["artifact"] == candidate["artifact"], "quality artifact does not match the candidate")
+    require(quality["status"] == "quality_validated", "quality validation has not passed")
+    require(quality["evaluation"]["sourceTracked"] is False, "quality input must remain local-only")
     require(
         experiment["status"] == "rejected_for_performance",
         "weight INT8 decision must remain explicit",
@@ -110,7 +128,19 @@ def main() -> int:
             require(not urls, f"{entry['id']}: candidate must not expose download URLs")
 
     fp16_entry = next(entry for entry in entries if entry["id"] == candidate["modelId"])
-    require(fp16_entry["artifact"] == {**candidate["artifact"], "urls": []}, "FP16 metadata drift")
+    require(
+        {key: value for key, value in fp16_entry["artifact"].items() if key != "urls"} == candidate["artifact"],
+        "FP16 metadata drift",
+    )
+    if candidate["status"] == "published":
+        require(candidate["deviceEvidence"]["endToEndReaderValidated"] is True, "Reader validation missing")
+        require(candidate["deviceEvidence"]["qualityValidated"] is True, "quality validation missing")
+        require(candidate["release"] is not None, "published candidate has no release")
+        require(fp16_entry["status"] == "published", "manifest publication state drift")
+        require(bool(fp16_entry["artifact"]["urls"]), "published artifact URL missing")
+    else:
+        require(candidate["release"] is None, "candidate must not claim a release")
+        require(fp16_entry["status"] == "candidate", "manifest candidate state drift")
 
     ignores = (root / ".gitignore").read_text(encoding="utf-8")
     for private_path in ("calibration-data/", "evaluation-data/", "private-data/"):

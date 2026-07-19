@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_x2plus_nnrt_fp16",
+  "status": "quality_validated",
+  "artifact": {
+    "fileName": "realesrgan-x2plus-180-fp16.ms",
+    "bytes": 33735064,
+    "sha256": "b6ee78c1e01d79fa5fb4ccb0b1bca039f804eb9c8f77e6c37b065869eb25866a"
+  },
+  "evaluation": {
+    "date": "2026-07-19",
+    "source": "local-only crop from a public reader screenshot",
+    "sourceTracked": false,
+    "sourceSize": [800, 859],
+    "sourceSha256": "86a7a6b9bd3d5d662048eb1be168140a71c3c5c1c9f2742fc558fa3e1146a4b2",
+    "runtime": "MindSpore Lite CPU using the release artifact and the Reader 160 px tile plus 10 px prepadding contract",
+    "comparison": "2x Lanczos",
+    "outputSize": [1600, 1718],
+    "outputSha256": "2b20d11325dd4d9c30fb4aba13b446cdaad8ede2fa3e035cbbe10e8732e0e4c2"
+  },
+  "decision": "Accept for publication. The artifact produced a coherent full image without tile seams or padding artifacts and visibly restored sharper line and eye detail than the 2x Lanczos baseline. Evaluation input and output remain local-only."
+}

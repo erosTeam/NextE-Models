@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_animevideov3_x2_nnrt_fp16",
+  "status": "candidate",
+  "sourceOnnx": {
+    "fileName": "realesr-animevideov3-x2-180.onnx",
+    "bytes": 2493318,
+    "sha256": "c2c7b9aaf7b507a66fbcf87a6d2ddfdc49a098a15410ff8ff8b04b470ea0e1a7"
+  },
+  "artifact": {
+    "fileName": "realesr-animevideov3-x2-180-fp16.ms",
+    "bytes": 1256688,
+    "sha256": "72ccfee454332b5da379652887e5c11a8514c419d4318d6128c66b1ef8700db3"
+  },
+  "runtimeValidationRequired": true,
+  "qualityValidationRequired": true,
+  "rejectedRuntimeEvidenceRef": "../experiments/fp16-nnrt-device-matrix-20260719.json",
+  "release": null
+}

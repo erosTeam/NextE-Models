@@ -1,0 +1,37 @@
+name: Build animevideov3 FP16 candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned exporter
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.2.2
+          python -m pip install onnx==1.16.0
+      - name: Fetch locked inputs
+        run: |
+          python scripts/fetch_locked_source.py models/realesrgan-animevideov3-x2/source.lock.json downloads/realesr-animevideov3.pth
+          python scripts/fetch_locked_source.py models/realesrgan-animevideov3-x2/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
+          mkdir -p work/mindspore
+          tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+      - name: Export and convert
+        run: |
+          python scripts/export_realesrgan_animevideov3_x2_onnx.py --checkpoint downloads/realesr-animevideov3.pth --output work/realesr-animevideov3-x2-180.onnx
+          python scripts/convert_mindspore.py --converter work/mindspore/tools/converter/converter/converter_lite --onnx work/realesr-animevideov3-x2-180.onnx --output artifacts/realesr-animevideov3-x2-180-fp16.ms --mode fp16
+      - uses: actions/upload-artifact@v4
+        with:
+          name: realesr-animevideov3-x2-180-fp16-candidate
+          path: |
+            artifacts/realesr-animevideov3-x2-180-fp16.ms
+            artifacts/realesr-animevideov3-x2-180-fp16.ms.candidate.json
+          if-no-files-found: error

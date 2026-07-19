@@ -1,19 +1,23 @@
 {
   "schemaVersion": 1,
   "modelId": "realesrgan_x2plus_nnrt_fp16",
-  "status": "candidate",
+  "status": "published",
   "artifact": {
     "fileName": "realesrgan-x2plus-180-fp16.ms",
     "bytes": 33735064,
     "sha256": "b6ee78c1e01d79fa5fb4ccb0b1bca039f804eb9c8f77e6c37b065869eb25866a"
   },
   "runtimeContractRef": "../source.lock.json#runtimeContract",
-  "deviceEvidenceRef": "../experiments/fp16-device-matrix-20260719.json",
+  "deviceEvidenceRef": "../experiments/fp16-reader-device-matrix-20260719.json",
+  "qualityEvidenceRef": "../experiments/fp16-quality-validation-20260719.json",
   "deviceEvidence": {
-    "scope": "raw NNRT prediction loop",
+    "scope": "full Reader pipeline",
     "deviceSelectors": ["103", "197", "237", "200"],
-    "endToEndReaderValidated": false,
-    "qualityValidated": false
+    "endToEndReaderValidated": true,
+    "qualityValidated": true
   },
-  "release": null
+  "release": {
+    "tag": "realesrgan-x2plus-nnrt-v1",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/realesrgan-x2plus-nnrt-v1"
+  }
 }

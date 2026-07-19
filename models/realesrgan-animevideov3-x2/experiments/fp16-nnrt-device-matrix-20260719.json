@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realesrgan_animevideov3_x2_nnrt_fp16",
+  "status": "rejected_nnrt_compile",
+  "artifact": {
+    "fileName": "realesr-animevideov3-x2-180-fp16.ms",
+    "bytes": 1256688,
+    "sha256": "72ccfee454332b5da379652887e5c11a8514c419d4318d6128c66b1ef8700db3"
+  },
+  "runtimeEvidence": {
+    "cpu": {
+      "deviceSelector": "103",
+      "loadPassed": true,
+      "predictionPassed": true
+    },
+    "nnrt": [
+      {
+        "deviceSelector": "103",
+        "loadPassed": false,
+        "result": "model load returned no usable input tensor"
+      },
+      {
+        "deviceSelector": "197",
+        "loadPassed": false,
+        "result": "model load returned no usable input tensor"
+      },
+      {
+        "deviceSelector": "237",
+        "loadPassed": false,
+        "result": "model load returned no usable input tensor"
+      }
+    ]
+  },
+  "decision": "Do not publish this graph. The same artifact loads and predicts through the CPU backend, but NNRT exposes no input tensor on all three tested NPU implementations, so the failure is in NNRT graph compilation or operator mapping rather than download integrity."
+}
