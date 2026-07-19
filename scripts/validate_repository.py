@@ -225,6 +225,9 @@ def main() -> int:
         require(int(device["ncnnProcessElapsedMs"]) > 0, f"{label}: invalid ncnn time")
         require(float(device["meanAbsoluteError"]) < 0.2, f"{label}: mean output error too large")
         require(int(device["samplesOverSixtyFour"]) == 0, f"{label}: severe output error")
+        require(device["applicationBackend"] == "nnrt", f"{label}: AUTO did not select NNRT")
+        require(int(device["applicationProcessElapsedMs"]) > 0, f"{label}: invalid application time")
+        require(int(device["eventLoopDelayP95Ms"]) <= 2, f"{label}: event loop P95 too large")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
