@@ -1,0 +1,35 @@
+name: Release ncnn runtime assets
+
+on:
+  push:
+    tags:
+      - "ncnn-runtime-assets-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate release manifest
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -c 'import json,os; data=json.load(open("manifests/ncnn-runtime-assets-v1.json")); assert data["status"]=="published"; assert data["releaseTag"]==os.environ["RELEASE_TAG"]'
+          python scripts/validate_repository.py
+      - name: Fetch and verify immutable assets
+        run: |
+          python scripts/prepare_runtime_release_assets.py \
+            --manifest manifests/ncnn-runtime-assets-v1.json \
+            --output artifacts/ncnn-runtime-assets-v1
+      - name: Create immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/ncnn-runtime-assets-v1/* \
+            --verify-tag --generate-notes --title "$GITHUB_REF_NAME"

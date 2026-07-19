@@ -56,6 +56,7 @@ def main() -> int:
     )
     experiment = load(root / "models/realesrgan-x2plus/experiments/weight-int8-device-103.json")
     manifest = load(root / "manifests/models-v1.json")
+    runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -142,11 +143,41 @@ def main() -> int:
         require(candidate["release"] is None, "candidate must not claim a release")
         require(fp16_entry["status"] == "candidate", "manifest candidate state drift")
 
+    require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
+    require(runtime_manifest["status"] == "published", "runtime assets are not published")
+    release_tag = runtime_manifest["releaseTag"]
+    require(release_tag == "ncnn-runtime-assets-v1", "unexpected runtime release tag")
+    runtime_ids: set[str] = set()
+    runtime_names: set[str] = set()
+    for entry in runtime_manifest["assets"]:
+        asset_id = entry["id"]
+        require(asset_id not in runtime_ids, f"duplicate runtime asset id: {asset_id}")
+        runtime_ids.add(asset_id)
+        require(entry["license"] == "MIT", f"{asset_id}: unexpected runtime asset license")
+        require(str(entry["upstream"]).startswith("https://github.com/"), f"{asset_id}: invalid upstream")
+        source = entry["source"]
+        artifact = entry["artifact"]
+        validate_artifact(source, f"{asset_id} source")
+        validate_artifact(artifact, f"{asset_id} artifact")
+        require(str(source["url"]).startswith("https://"), f"{asset_id}: HTTPS source required")
+        require(source["bytes"] == artifact["bytes"], f"{asset_id}: byte count drift")
+        require(source["sha256"] == artifact["sha256"], f"{asset_id}: SHA-256 drift")
+        artifact_name = artifact["fileName"]
+        require(artifact_name not in runtime_names, f"duplicate runtime artifact: {artifact_name}")
+        runtime_names.add(artifact_name)
+        expected_url = (
+            "https://github.com/erosTeam/NextE-Models/releases/download/"
+            f"{release_tag}/{artifact_name}"
+        )
+        require(artifact["urls"] == [expected_url], f"{asset_id}: release URL drift")
+
     ignores = (root / ".gitignore").read_text(encoding="utf-8")
     for private_path in ("calibration-data/", "evaluation-data/", "private-data/"):
         require(private_path in ignores, f"privacy ignore missing: {private_path}")
     notices = (root / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     require("BSD 3-Clause" in notices, "third-party license notice is missing")
+    for notice in ("waifu2x-ncnn-vulkan", "realcugan-ncnn-vulkan", "Hailo Model Zoo"):
+        require(notice in notices, f"third-party notice is missing: {notice}")
 
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True
@@ -158,7 +189,10 @@ def main() -> int:
         full = root / path
         require(full.stat().st_size < 5 * 1024 * 1024, f"large file belongs in Release: {path}")
 
-    print(f"repository validation passed: models={len(entries)} trackedFiles={len(tracked)}")
+    print(
+        f"repository validation passed: models={len(entries)} "
+        f"runtimeAssets={len(runtime_ids)} trackedFiles={len(tracked)}"
+    )
     return 0
 
 

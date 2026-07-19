@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "status": "published",
+  "releaseTag": "ncnn-runtime-assets-v1",
+  "assets": [
+    {
+      "id": "espcn_x2_source_zip",
+      "license": "MIT",
+      "upstream": "https://github.com/hailo-ai/hailo_model_zoo",
+      "source": {
+        "fileName": "espcn_x2.zip",
+        "url": "https://hailo-model-zoo.s3.eu-west-2.amazonaws.com/SuperResolution/espcn/espcn_x2/2022-08-02/espcn_x2.zip",
+        "bytes": 80589,
+        "sha256": "11a286a0a761ec78a4f0ec17b905d2dbe12a19263e6315a25c08c6aaf983410c"
+      },
+      "artifact": {
+        "fileName": "espcn-x2.zip",
+        "bytes": 80589,
+        "sha256": "11a286a0a761ec78a4f0ec17b905d2dbe12a19263e6315a25c08c6aaf983410c",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/espcn-x2.zip"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_photo_noise0_2x_param",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.param",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-upconv_7_photo/noise0_scale2.0x_model.param",
+        "bytes": 1047,
+        "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6"
+      },
+      "artifact": {
+        "fileName": "waifu2x-photo-noise0-2x.param",
+        "bytes": 1047,
+        "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-photo-noise0-2x.param"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_photo_noise0_2x_model",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.bin",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-upconv_7_photo/noise0_scale2.0x_model.bin",
+        "bytes": 1106248,
+        "sha256": "fbfc8d57e4333748c9c6db2ec4d5454c98cd1c6aa53289f2989c3bdb4e84b673"
+      },
+      "artifact": {
+        "fileName": "waifu2x-photo-noise0-2x.bin",
+        "bytes": 1106248,
+        "sha256": "fbfc8d57e4333748c9c6db2ec4d5454c98cd1c6aa53289f2989c3bdb4e84b673",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-photo-noise0-2x.bin"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_art_noise0_2x_param",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.param",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-upconv_7_anime_style_art_rgb/noise0_scale2.0x_model.param",
+        "bytes": 1047,
+        "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6"
+      },
+      "artifact": {
+        "fileName": "waifu2x-art-noise0-2x.param",
+        "bytes": 1047,
+        "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-art-noise0-2x.param"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_art_noise0_2x_model",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.bin",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-upconv_7_anime_style_art_rgb/noise0_scale2.0x_model.bin",
+        "bytes": 1106248,
+        "sha256": "e1d2c4d91be98e72c0d48d08626cbe7d879aa2b80f740133dcc0d860eabb4189"
+      },
+      "artifact": {
+        "fileName": "waifu2x-art-noise0-2x.bin",
+        "bytes": 1106248,
+        "sha256": "e1d2c4d91be98e72c0d48d08626cbe7d879aa2b80f740133dcc0d860eabb4189",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-art-noise0-2x.bin"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_cunet_noise0_2x_param",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.param",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-cunet/noise0_scale2.0x_model.param",
+        "bytes": 7249,
+        "sha256": "ccc3b2f1c9fad829ecdda40cac8dc853fcddf14917170efba888b256fbf9074a"
+      },
+      "artifact": {
+        "fileName": "waifu2x-cunet-noise0-2x.param",
+        "bytes": 7249,
+        "sha256": "ccc3b2f1c9fad829ecdda40cac8dc853fcddf14917170efba888b256fbf9074a",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-cunet-noise0-2x.param"
+        ]
+      }
+    },
+    {
+      "id": "waifu2x_cunet_noise0_2x_model",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/waifu2x-ncnn-vulkan",
+      "source": {
+        "fileName": "noise0_scale2.0x_model.bin",
+        "url": "https://raw.githubusercontent.com/nihui/waifu2x-ncnn-vulkan/64914665c45893135c9e50c1c296170a121b9f77/models/models-cunet/noise0_scale2.0x_model.bin",
+        "bytes": 2776400,
+        "sha256": "5329a9375c9cfb64a60a2903fd8ae6e2851d9b069556bf025dbab9d0216fb27c"
+      },
+      "artifact": {
+        "fileName": "waifu2x-cunet-noise0-2x.bin",
+        "bytes": 2776400,
+        "sha256": "5329a9375c9cfb64a60a2903fd8ae6e2851d9b069556bf025dbab9d0216fb27c",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/waifu2x-cunet-noise0-2x.bin"
+        ]
+      }
+    },
+    {
+      "id": "realcugan_se_2x_conservative_param",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/realcugan-ncnn-vulkan",
+      "source": {
+        "fileName": "up2x-conservative.param",
+        "url": "https://raw.githubusercontent.com/nihui/realcugan-ncnn-vulkan/395302c5c70f1bff604c974e92e0a87e45c9f9ee/models/models-se/up2x-conservative.param",
+        "bytes": 4761,
+        "sha256": "4b3b5c5710ad1d00503c8243417aa75f13fe497723e8b4952e8b1abfc08f9b84"
+      },
+      "artifact": {
+        "fileName": "realcugan-se-2x-conservative.param",
+        "bytes": 4761,
+        "sha256": "4b3b5c5710ad1d00503c8243417aa75f13fe497723e8b4952e8b1abfc08f9b84",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/realcugan-se-2x-conservative.param"
+        ]
+      }
+    },
+    {
+      "id": "realcugan_se_2x_conservative_model",
+      "license": "MIT",
+      "upstream": "https://github.com/nihui/realcugan-ncnn-vulkan",
+      "source": {
+        "fileName": "up2x-conservative.bin",
+        "url": "https://raw.githubusercontent.com/nihui/realcugan-ncnn-vulkan/395302c5c70f1bff604c974e92e0a87e45c9f9ee/models/models-se/up2x-conservative.bin",
+        "bytes": 2573648,
+        "sha256": "91c72c136e7ff8556323d4449c5ceeff22d9829bf8463a01137cadb8d59b84a0"
+      },
+      "artifact": {
+        "fileName": "realcugan-se-2x-conservative.bin",
+        "bytes": 2573648,
+        "sha256": "91c72c136e7ff8556323d4449c5ceeff22d9829bf8463a01137cadb8d59b84a0",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/ncnn-runtime-assets-v1/realcugan-se-2x-conservative.bin"
+        ]
+      }
+    }
+  ]
+}
