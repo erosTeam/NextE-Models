@@ -73,6 +73,31 @@ class SliceProbe(nn.Module):
         return value[:, :, 4:-4, 4:-4]
 
 
+class Unet1CumulativeProbe(nn.Module):
+    def __init__(self, unet: nn.Module, stop: str) -> None:
+        super().__init__()
+        self.unet = unet
+        self.stop = stop
+
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        first = self.unet.conv1(value)
+        if self.stop == "conv1":
+            return first
+        second = torch.nn.functional.leaky_relu(self.unet.conv1_down(first), 0.1)
+        second = self.unet.conv2(second)
+        if self.stop == "se":
+            return second
+        first = first[:, :, 4:-4, 4:-4]
+        second = torch.nn.functional.leaky_relu(self.unet.conv2_up(second), 0.1)
+        merged = first + second
+        if self.stop == "add":
+            return merged
+        result = torch.nn.functional.leaky_relu(self.unet.conv3(merged), 0.1)
+        if self.stop == "conv3":
+            return result
+        return self.unet.conv_bottom(result)
+
+
 def export_probe(module: nn.Module, shape: tuple[int, ...], output: Path, opset: int) -> None:
     sample = torch.linspace(0.0, 1.0, steps=int(np.prod(shape)), dtype=torch.float32).reshape(shape)
     module = module.eval()
@@ -195,6 +220,11 @@ def main() -> int:
             ("stride2-conv", model.unet1.conv1_down, (1, 64, 174, 174)),
             ("deconv2", model.unet1.conv2_up, (1, 64, 83, 83)),
             ("deconv4", model.unet1.conv_bottom, (1, 64, 164, 164)),
+            ("u1-conv1", Unet1CumulativeProbe(model.unet1, "conv1"), (1, 3, 178, 178)),
+            ("u1-se", Unet1CumulativeProbe(model.unet1, "se"), (1, 3, 178, 178)),
+            ("u1-add", Unet1CumulativeProbe(model.unet1, "add"), (1, 3, 178, 178)),
+            ("u1-conv3", Unet1CumulativeProbe(model.unet1, "conv3"), (1, 3, 178, 178)),
+            ("u1-output", Unet1CumulativeProbe(model.unet1, "output"), (1, 3, 178, 178)),
             ("unet1", model.unet1, (1, 3, 178, 178)),
             ("unet2", model.unet2, (1, 3, 324, 324)),
         )

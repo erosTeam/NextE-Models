@@ -47,10 +47,16 @@ jobs:
             [stride2-conv]=1,64,174,174
             [deconv2]=1,64,83,83
             [deconv4]=1,64,164,164
+            [u1-conv1]=1,3,178,178
+            [u1-se]=1,3,178,178
+            [u1-add]=1,3,178,178
+            [u1-conv3]=1,3,178,178
+            [u1-output]=1,3,178,178
             [unet1]=1,3,178,178
             [unet2]=1,3,324,324
           )
-          for probe in slice se83 stride2-conv deconv2 deconv4 unet1 unet2; do
+          for probe in slice se83 stride2-conv deconv2 deconv4 \
+            u1-conv1 u1-se u1-add u1-conv3 u1-output unet1 unet2; do
             python scripts/convert_mindspore.py \
               --converter work/mindspore/tools/converter/converter/converter_lite \
               --onnx "work/probes/$probe.onnx" \
