@@ -99,7 +99,11 @@ class Waifu2xPhotoNoise0X2(nn.Module):
                 )
                 convolution.bias.copy_(reader.fp32(output_channels))
             self.deconvolution.weight.copy_(
-                reader.fp16(256 * 3 * 4 * 4).reshape(256, 3, 4, 4)
+                # ncnn serializes static Deconvolution weights output-major, while
+                # torch ConvTranspose2d stores them input-major.
+                reader.fp16(256 * 3 * 4 * 4)
+                .reshape(3, 256, 4, 4)
+                .permute(1, 0, 2, 3)
             )
             self.deconvolution.bias.copy_(reader.fp32(3))
         reader.require_eof()
