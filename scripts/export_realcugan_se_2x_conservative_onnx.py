@@ -39,7 +39,7 @@ def load_upcunet(source: Path) -> type[nn.Module]:
 
 
 class RealCuganTile(nn.Module):
-    """The already-padded tile core used by NextE's current ncnn models-se graph."""
+    """NNRT-normalized tile core equivalent to the current ncnn models-se graph."""
 
     def __init__(self, model: nn.Module) -> None:
         super().__init__()
@@ -47,8 +47,37 @@ class RealCuganTile(nn.Module):
         self.unet2 = model.unet2
 
     def forward(self, value: torch.Tensor) -> torch.Tensor:
-        first = self.unet1(value)
-        second = self.unet2(first, 1.0)
+        first_skip = self.unet1.conv1(value)
+        first = first_skip[:, :, 4:-4, 4:-4]
+        second = torch.nn.functional.leaky_relu(self.unet1.conv1_down(first_skip), 0.1)
+        second = self.unet1.conv2(second)
+        second = torch.nn.functional.leaky_relu(self.unet1.conv2_up(second), 0.1)
+        first = torch.nn.functional.leaky_relu(self.unet1.conv3(first + second), 0.1)
+        first = self.unet1.conv_bottom(first)
+
+        second_skip = self.unet2.conv1(first)
+        second = second_skip[:, :, 16:-16, 16:-16]
+        third = torch.nn.functional.leaky_relu(self.unet2.conv1_down(second_skip), 0.1)
+        third = self.unet2.conv2(third)
+        third_skip = third[:, :, 4:-4, 4:-4]
+        fourth = torch.nn.functional.leaky_relu(self.unet2.conv2_down(third), 0.1)
+        fourth = self.unet2.conv3(fourth)
+        fourth = torch.nn.functional.leaky_relu(self.unet2.conv3_up(fourth), 0.1)
+        third = self.unet2.conv4(third_skip + fourth)
+        third = torch.nn.functional.leaky_relu(self.unet2.conv4_up(third), 0.1)
+        second = torch.nn.functional.leaky_relu(self.unet2.conv5(second + third), 0.1)
+        second = self.unet2.conv_bottom(second)
+        return second + first[:, :, 20:-20, 20:-20]
+
+
+class UpstreamRealCuganTile(nn.Module):
+    def __init__(self, model: nn.Module) -> None:
+        super().__init__()
+        self.model = model
+
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        first = self.model.unet1(value)
+        second = self.model.unet2(first, 1.0)
         return second + first[:, :, 20:-20, 20:-20]
 
 
@@ -172,7 +201,7 @@ def main() -> int:
         steps=int(np.prod(contract["inputShape"])),
         dtype=torch.float32,
     ).reshape(contract["inputShape"])
-    tile = RealCuganTile(model).eval()
+    tile = UpstreamRealCuganTile(model).eval()
     with torch.no_grad():
         reference_output = tile(sample)
     replace_se_means(model)
