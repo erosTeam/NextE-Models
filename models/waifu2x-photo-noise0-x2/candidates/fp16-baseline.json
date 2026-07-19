@@ -27,7 +27,7 @@
   "applicationIntegrationRequired": false,
   "applicationIntegration": "The fixed-shape NNRT graph uses the existing Reader 142 px tile plus 7 px shrink contract and matches the pinned ncnn full-page output on all validated devices.",
   "release": {
-    "tag": "waifu2x-photo-noise0-x2-nnrt-v2",
-    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/waifu2x-photo-noise0-x2-nnrt-v2"
+    "tag": "waifu2x-photo-noise0-x2-nnrt-v3",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/waifu2x-photo-noise0-x2-nnrt-v3"
   }
 }
