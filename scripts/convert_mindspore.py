@@ -101,6 +101,8 @@ def main() -> int:
     parser.add_argument("--converter", required=True, type=Path)
     parser.add_argument("--onnx", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--input-name", default="input")
+    parser.add_argument("--input-shape", default="1,3,180,180")
     parser.add_argument(
         "--mode",
         required=True,
@@ -112,6 +114,11 @@ def main() -> int:
     converter = args.converter.resolve()
     onnx_path = args.onnx.resolve()
     output = args.output.resolve()
+    input_shape = [int(value) for value in args.input_shape.split(",")]
+    if len(input_shape) != 4 or any(value <= 0 for value in input_shape):
+        raise RuntimeError("--input-shape must contain four positive dimensions")
+    if not args.input_name:
+        raise RuntimeError("--input-name must not be empty")
     if not converter.is_file():
         raise RuntimeError(f"converter does not exist: {converter}")
     if not onnx_path.is_file():
@@ -135,7 +142,7 @@ def main() -> int:
             f"--modelFile={onnx_path}",
             f"--outputFile={output_base}",
             "--saveType=MINDIR_LITE",
-            "--inputShape=input:1,3,180,180",
+            f"--inputShape={args.input_name}:{','.join(str(value) for value in input_shape)}",
             "--inputDataFormat=NCHW",
             "--outputDataFormat=NCHW",
         ]
@@ -155,6 +162,12 @@ def main() -> int:
         "sourceOnnx": {
             "bytes": onnx_path.stat().st_size,
             "sha256": sha256(onnx_path),
+        },
+        "runtimeInput": {
+            "name": args.input_name,
+            "shape": input_shape,
+            "dataType": "FLOAT32",
+            "format": "NCHW",
         },
         "artifact": {
             "fileName": output.name,

@@ -32,7 +32,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("lock", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--entry", choices=["checkpoint", "converter"], default="checkpoint")
+    parser.add_argument(
+        "--entry",
+        choices=["checkpoint", "converter", "parameter", "weights"],
+        default="checkpoint",
+    )
     args = parser.parse_args()
 
     lock = json.loads(args.lock.read_text(encoding="utf-8"))
