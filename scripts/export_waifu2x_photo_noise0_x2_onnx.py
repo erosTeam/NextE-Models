@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reconstruct the pinned waifu2x upconv7 ncnn graph and export fixed-shape ONNX."""
+"""Reconstruct a locked waifu2x upconv7 ncnn graph and export fixed-shape ONNX."""
 
 from __future__ import annotations
 
@@ -71,7 +71,7 @@ class WeightReader:
             )
 
 
-class Waifu2xPhotoNoise0X2(nn.Module):
+class Waifu2xUpconv7Noise0X2(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.convolutions = nn.ModuleList(
@@ -132,7 +132,7 @@ def main() -> int:
     if layer_types != ["Input", *("Convolution" for _ in range(6)), "Deconvolution"]:
         raise RuntimeError(f"unexpected ncnn graph layers: {layer_types}")
 
-    model = Waifu2xPhotoNoise0X2().eval()
+    model = Waifu2xUpconv7Noise0X2().eval()
     model.load_ncnn_weights(args.weights)
     contract = lock["runtimeContract"]
     sample = torch.linspace(

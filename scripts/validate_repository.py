@@ -58,6 +58,7 @@ def main() -> int:
     manifest = load(root / "manifests/models-v1.json")
     runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
     waifu_lock = load(root / "models/waifu2x-photo-noise0-x2/source.lock.json")
+    waifu_art_lock = load(root / "models/waifu2x-art-noise0-x2/source.lock.json")
     waifu_candidate = load(
         root / "models/waifu2x-photo-noise0-x2/candidates/fp16-baseline.json"
     )
@@ -113,6 +114,17 @@ def main() -> int:
     waifu_contract = waifu_lock["runtimeContract"]
     require(waifu_contract["inputShape"] == [1, 3, 156, 156], "waifu2x input shape changed")
     require(waifu_contract["outputShape"] == [1, 3, 284, 284], "waifu2x output shape changed")
+    require(waifu_art_lock["upstream"]["license"] == "MIT", "unexpected waifu2x art license")
+    for label in ("parameter", "weights", "converter"):
+        entry = waifu_art_lock[label]
+        require(int(entry["bytes"]) > 0, f"waifu2x art {label}: bytes must be positive")
+        require(bool(SHA256.fullmatch(entry["sha256"])), f"waifu2x art {label}: invalid SHA-256")
+        require(str(entry["url"]).startswith("https://"), f"waifu2x art {label}: HTTPS URL required")
+    waifu_art_contract = waifu_art_lock["runtimeContract"]
+    require(waifu_art_contract["inputShape"] == [1, 3, 156, 156], "waifu2x art input shape changed")
+    require(waifu_art_contract["outputShape"] == [1, 3, 284, 284], "waifu2x art output shape changed")
+    require(waifu_art_contract["tileSize"] == 142, "waifu2x art tile size changed")
+    require(waifu_art_contract["prepadding"] == 7, "waifu2x art prepadding changed")
     validate_artifact(waifu_candidate["artifact"], "waifu2x FP16 candidate")
     validate_artifact(waifu_matrix["artifact"], "waifu2x FP16 device matrix")
     validate_artifact(waifu_reader_matrix["artifact"], "waifu2x FP16 Reader matrix")
