@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realcugan_se_2x_conservative_nnrt_fp16",
+  "status": "published",
+  "sourceOnnx": {
+    "fileName": "realcugan-se-2x-conservative-164.onnx",
+    "bytes": 5156992,
+    "sha256": "cdc3890d489a08113d3bb368143af4f9abeef2943110b321db5a625abfbe80bd"
+  },
+  "artifact": {
+    "fileName": "realcugan-se-2x-conservative-164-fp16.ms",
+    "bytes": 2595776,
+    "sha256": "fd4795aa3ce7932049a280907ce4c5c01a99f1584864e8a54d869355fe4f162e"
+  },
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "qualityEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "deviceEvidence": {
+    "scope": "full NextE Reader pipeline against the pinned Real-CUGAN ncnn reference",
+    "deviceSelectors": ["103", "197", "237"],
+    "endToEndReaderValidated": true,
+    "qualityValidated": true
+  },
+  "runtimeValidationRequired": false,
+  "qualityValidationRequired": false,
+  "applicationIntegrationRequired": false,
+  "applicationIntegration": "The fixed 164 px NNRT input preserves the Reader 128 px tile, 18 px prepadding, and per-tile SE contract and emits the complete 256 px output tile.",
+  "release": {
+    "tag": "realcugan-se-2x-conservative-nnrt-v1",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/realcugan-se-2x-conservative-nnrt-v1"
+  }
+}

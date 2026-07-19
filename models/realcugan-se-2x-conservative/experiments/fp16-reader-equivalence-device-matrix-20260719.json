@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "modelId": "realcugan_se_2x_conservative_nnrt_fp16",
+  "status": "reader_pipeline_validated",
+  "artifact": {
+    "fileName": "realcugan-se-2x-conservative-164-fp16.ms",
+    "bytes": 2595776,
+    "sha256": "fd4795aa3ce7932049a280907ce4c5c01a99f1584864e8a54d869355fe4f162e"
+  },
+  "reference": {
+    "engine": "ncnn-vulkan",
+    "model": "models-se/up2x-conservative",
+    "upstream": "https://github.com/nihui/realcugan-ncnn-vulkan"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "scope": "NextE RGB tiling, per-tile SE prediction, valid-region crop, and complete Reader output stitching",
+    "input": "authorized retained reader page; image bytes are local-only and not tracked",
+    "sourceTracked": false,
+    "sourceSize": [800, 1100],
+    "outputSize": [1600, 2200],
+    "tileCount": 63,
+    "tileSize": 128,
+    "prepadding": 18,
+    "nnrtInputShape": [1, 3, 164, 164],
+    "nnrtOutputShape": [1, 3, 256, 256],
+    "comparisonSamples": 10560000,
+    "metric": "absolute difference over stitched RGB bytes"
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "ncnnProcessElapsedMs": 12089,
+      "ncnnInferenceMs": 10551,
+      "nnrtProcessElapsedMs": 4059,
+      "nnrtInferenceMs": 1698,
+      "meanAbsoluteError": 0.16787765151515152,
+      "maximumAbsoluteError": 28,
+      "samplesOverFour": 21640,
+      "samplesOverSixteen": 82,
+      "samplesOverSixtyFour": 0,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "ncnnProcessElapsedMs": 12114,
+      "ncnnInferenceMs": 8865,
+      "nnrtProcessElapsedMs": 4090,
+      "nnrtInferenceMs": 1665,
+      "meanAbsoluteError": 0.16787765151515152,
+      "maximumAbsoluteError": 28,
+      "samplesOverFour": 21640,
+      "samplesOverSixteen": 82,
+      "samplesOverSixtyFour": 0,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "ncnnProcessElapsedMs": 8939,
+      "ncnnInferenceMs": 6035,
+      "nnrtProcessElapsedMs": 2981,
+      "nnrtInferenceMs": 1486,
+      "meanAbsoluteError": 0.1712682765151515,
+      "maximumAbsoluteError": 29,
+      "samplesOverFour": 22334,
+      "samplesOverSixteen": 96,
+      "samplesOverSixtyFour": 0,
+      "passed": true
+    }
+  ],
+  "decision": "Accept the FP16 artifact as the Real-CUGAN Reader backend. Across three NPU implementations, the retained page stays below 0.18 mean RGB byte error with no samples above 64; complete process time drops from about 9 to 12 seconds to about 3 to 4 seconds."
+}

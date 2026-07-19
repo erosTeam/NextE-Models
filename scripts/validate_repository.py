@@ -84,6 +84,13 @@ def main() -> int:
     realcugan_lock = load(
         root / "models/realcugan-se-2x-conservative/source.lock.json"
     )
+    realcugan_candidate = load(
+        root / "models/realcugan-se-2x-conservative/candidates/fp16-baseline.json"
+    )
+    realcugan_reader_matrix = load(
+        root
+        / "models/realcugan-se-2x-conservative/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
+    )
 
     require(lock["upstream"]["license"] == "BSD-3-Clause", "unexpected upstream license")
     for label in ("checkpoint", "converter"):
@@ -197,6 +204,27 @@ def main() -> int:
     require(realcugan_contract["outputShape"] == [1, 3, 256, 256], "Real-CUGAN output shape changed")
     require(realcugan_contract["tileSize"] == 128, "Real-CUGAN tile size changed")
     require(realcugan_contract["seScope"] == "per-tile", "Real-CUGAN SE scope changed")
+    validate_artifact(realcugan_candidate["artifact"], "Real-CUGAN FP16 candidate")
+    validate_artifact(realcugan_reader_matrix["artifact"], "Real-CUGAN Reader matrix")
+    require(
+        realcugan_reader_matrix["artifact"] == realcugan_candidate["artifact"],
+        "Real-CUGAN Reader evidence artifact drift",
+    )
+    validate_device_coverage(
+        realcugan_candidate["deviceEvidence"]["deviceSelectors"],
+        realcugan_reader_matrix["devices"],
+    )
+    for device in realcugan_reader_matrix["devices"]:
+        label = f"Real-CUGAN Reader device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: Reader benchmark did not pass")
+        require(
+            str(device["selectedAccelerator"]).startswith("NPU_"),
+            f"{label}: selected accelerator is not an enumerated NPU",
+        )
+        require(int(device["nnrtProcessElapsedMs"]) > 0, f"{label}: invalid NNRT time")
+        require(int(device["ncnnProcessElapsedMs"]) > 0, f"{label}: invalid ncnn time")
+        require(float(device["meanAbsoluteError"]) < 0.2, f"{label}: mean output error too large")
+        require(int(device["samplesOverSixtyFour"]) == 0, f"{label}: severe output error")
 
     validate_artifact(candidate["artifact"], "fp16 candidate")
     validate_artifact(matrix["artifact"], "fp16 device matrix")
@@ -296,6 +324,27 @@ def main() -> int:
     require(espcn_candidate["deviceEvidence"]["qualityValidated"] is True, "ESPCN quality validation missing")
     require(espcn_candidate["release"] is not None, "published ESPCN candidate has no release")
     require(bool(espcn_entry["artifact"]["urls"]), "published ESPCN artifact URL missing")
+
+    realcugan_entry = next(
+        entry for entry in entries if entry["id"] == realcugan_candidate["modelId"]
+    )
+    require(
+        {key: value for key, value in realcugan_entry["artifact"].items() if key != "urls"}
+        == realcugan_candidate["artifact"],
+        "Real-CUGAN metadata drift",
+    )
+    require(realcugan_candidate["status"] == "published", "Real-CUGAN publication state drift")
+    require(realcugan_entry["status"] == "published", "Real-CUGAN manifest publication drift")
+    require(
+        realcugan_candidate["deviceEvidence"]["endToEndReaderValidated"] is True,
+        "Real-CUGAN Reader validation missing",
+    )
+    require(
+        realcugan_candidate["deviceEvidence"]["qualityValidated"] is True,
+        "Real-CUGAN quality validation missing",
+    )
+    require(realcugan_candidate["release"] is not None, "published Real-CUGAN candidate has no release")
+    require(bool(realcugan_entry["artifact"]["urls"]), "published Real-CUGAN artifact URL missing")
 
     require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
     require(runtime_manifest["status"] == "published", "runtime assets are not published")

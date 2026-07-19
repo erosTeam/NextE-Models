@@ -1,0 +1,88 @@
+name: Release Real-CUGAN SE NNRT model
+
+on:
+  push:
+    tags:
+      - "realcugan-se-2x-conservative-nnrt-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned exporter
+        run: |
+          python -m pip install numpy==1.26.4
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.2.2
+          python -m pip install onnx==1.16.0
+      - name: Fetch locked inputs
+        run: |
+          python scripts/fetch_locked_source.py models/realcugan-se-2x-conservative/source.lock.json downloads/updated_weights.zip
+          python scripts/fetch_locked_source.py models/realcugan-se-2x-conservative/source.lock.json downloads/upcunet_v3.py --entry source
+          python scripts/fetch_locked_source.py models/realcugan-se-2x-conservative/source.lock.json downloads/mindspore-lite.tar.gz --entry converter
+          mkdir -p work/realcugan work/mindspore artifacts
+          unzip -q downloads/updated_weights.zip 'updated_weights/up2x-latest-conservative.pth' -d work/realcugan
+          python -c 'import hashlib,json,pathlib; lock=json.load(open("models/realcugan-se-2x-conservative/source.lock.json")); path=pathlib.Path("work/realcugan")/lock["checkpoint"]["member"]; assert path.stat().st_size==lock["checkpoint"]["memberBytes"]; assert hashlib.sha256(path.read_bytes()).hexdigest()==lock["checkpoint"]["memberSha256"]'
+          tar -xzf downloads/mindspore-lite.tar.gz -C work/mindspore --strip-components=1
+      - name: Rebuild and verify immutable asset
+        run: |
+          python scripts/export_realcugan_se_2x_conservative_onnx.py \
+            --checkpoint work/realcugan/updated_weights/up2x-latest-conservative.pth \
+            --source downloads/upcunet_v3.py \
+            --output work/realcugan-se-2x-conservative-164.onnx
+          python scripts/convert_mindspore.py \
+            --converter work/mindspore/tools/converter/converter/converter_lite \
+            --onnx work/realcugan-se-2x-conservative-164.onnx \
+            --output artifacts/realcugan-se-2x-conservative-164-fp16.ms \
+            --input-shape 1,3,164,164 \
+            --mode fp16
+          python scripts/verify_publishable.py \
+            --model realcugan_se_2x_conservative_nnrt_fp16 \
+            --artifact artifacts/realcugan-se-2x-conservative-164-fp16.ms
+      - uses: actions/upload-artifact@v4
+        with:
+          name: realcugan-se-2x-conservative-164-fp16-release
+          path: artifacts/realcugan-se-2x-conservative-164-fp16.ms
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: realcugan-se-2x-conservative-164-fp16-release
+          path: artifacts
+      - name: Verify release metadata and artifact
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -c 'import json,os; data=json.load(open("manifests/models-v1.json")); entry=next(item for item in data["models"] if item["id"]=="realcugan_se_2x_conservative_nnrt_fp16"); expected="https://github.com/erosTeam/NextE-Models/releases/download/"+os.environ["RELEASE_TAG"]+"/"+entry["artifact"]["fileName"]; assert entry["status"]=="published"; assert entry["artifact"]["urls"]==[expected]'
+          python scripts/verify_publishable.py \
+            --model realcugan_se_2x_conservative_nnrt_fp16 \
+            --artifact artifacts/realcugan-se-2x-conservative-164-fp16.ms \
+            --tag "$RELEASE_TAG"
+      - name: Create immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            artifacts/realcugan-se-2x-conservative-164-fp16.ms \
+            licenses/Real-CUGAN-MIT.txt \
+            THIRD_PARTY_NOTICES.md \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --notes "Real-CUGAN SE 2x conservative FP16 model for the NextE NNRT Reader backend. Source and redistribution notices are attached to this release."
