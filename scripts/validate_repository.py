@@ -66,6 +66,7 @@ def main() -> int:
         root
         / "models/waifu2x-art-noise0-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
     )
+    waifu_cunet_lock = load(root / "models/waifu2x-cunet-noise0-x2/source.lock.json")
     waifu_candidate = load(
         root / "models/waifu2x-photo-noise0-x2/candidates/fp16-baseline.json"
     )
@@ -132,6 +133,17 @@ def main() -> int:
     require(waifu_art_contract["outputShape"] == [1, 3, 284, 284], "waifu2x art output shape changed")
     require(waifu_art_contract["tileSize"] == 142, "waifu2x art tile size changed")
     require(waifu_art_contract["prepadding"] == 7, "waifu2x art prepadding changed")
+    require(waifu_cunet_lock["upstream"]["license"] == "MIT", "unexpected waifu2x CUNet license")
+    for label in ("parameter", "weights", "converter"):
+        entry = waifu_cunet_lock[label]
+        require(int(entry["bytes"]) > 0, f"waifu2x CUNet {label}: bytes must be positive")
+        require(bool(SHA256.fullmatch(entry["sha256"])), f"waifu2x CUNet {label}: invalid SHA-256")
+        require(str(entry["url"]).startswith("https://"), f"waifu2x CUNet {label}: HTTPS URL required")
+    waifu_cunet_contract = waifu_cunet_lock["runtimeContract"]
+    require(waifu_cunet_contract["inputShape"] == [1, 3, 164, 164], "waifu2x CUNet input shape changed")
+    require(waifu_cunet_contract["outputShape"] == [1, 3, 256, 256], "waifu2x CUNet output shape changed")
+    require(waifu_cunet_contract["tileSize"] == 128, "waifu2x CUNet tile size changed")
+    require(waifu_cunet_contract["prepadding"] == 18, "waifu2x CUNet prepadding changed")
     validate_artifact(waifu_art_candidate["artifact"], "waifu2x art FP16 candidate")
     validate_artifact(waifu_art_reader_matrix["artifact"], "waifu2x art Reader matrix")
     require(
