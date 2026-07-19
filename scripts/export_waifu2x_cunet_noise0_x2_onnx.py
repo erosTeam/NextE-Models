@@ -77,6 +77,7 @@ class Waifu2xCunetNoise0X2(nn.Module):
         self.conv5 = nn.Conv2d(128, 64, 3)
         self.fc6 = nn.Linear(64, 8)
         self.fc7 = nn.Linear(8, 64)
+        self.pool5 = nn.AvgPool2d(76)
         self.deconv1 = nn.ConvTranspose2d(64, 64, 2, stride=2)
         self.conv8 = nn.Conv2d(64, 64, 3)
         self.deconv2 = nn.ConvTranspose2d(64, 3, 4, stride=2, padding=3)
@@ -88,16 +89,19 @@ class Waifu2xCunetNoise0X2(nn.Module):
         self.conv13 = nn.Conv2d(64, 128, 3)
         self.fc14 = nn.Linear(128, 16)
         self.fc15 = nn.Linear(16, 128)
+        self.pool13 = nn.AvgPool2d(142)
         self.conv16 = nn.Conv2d(128, 128, 2, stride=2)
         self.conv17 = nn.Conv2d(128, 256, 3)
         self.conv18 = nn.Conv2d(256, 128, 3)
         self.fc19 = nn.Linear(128, 16)
         self.fc20 = nn.Linear(16, 128)
+        self.pool18 = nn.AvgPool2d(67)
         self.deconv3 = nn.ConvTranspose2d(128, 128, 2, stride=2)
         self.conv21 = nn.Conv2d(128, 64, 3)
         self.conv22 = nn.Conv2d(64, 64, 3)
         self.fc23 = nn.Linear(64, 8)
         self.fc24 = nn.Linear(8, 64)
+        self.pool22 = nn.AvgPool2d(130)
         self.deconv4 = nn.ConvTranspose2d(64, 64, 2, stride=2)
         self.conv25 = nn.Conv2d(64, 64, 3)
         self.conv26 = nn.Conv2d(64, 3, 3)
@@ -109,10 +113,11 @@ class Waifu2xCunetNoise0X2(nn.Module):
     @staticmethod
     def squeeze_excite(
         value: torch.Tensor,
+        pool: nn.AvgPool2d,
         reduction: nn.Linear,
         expansion: nn.Linear,
     ) -> torch.Tensor:
-        scale = torch.mean(value, dim=(2, 3))
+        scale = torch.flatten(pool(value), 1)
         scale = torch.relu(reduction(scale))
         scale = torch.sigmoid(expansion(scale)).unsqueeze(2).unsqueeze(3)
         return value * scale
@@ -123,7 +128,7 @@ class Waifu2xCunetNoise0X2(nn.Module):
         first3 = self.activate(self.conv3(first2))
         first4 = self.activate(self.conv4(first3))
         first5 = self.activate(self.conv5(first4))
-        first5 = self.squeeze_excite(first5, self.fc6, self.fc7)
+        first5 = self.squeeze_excite(first5, self.pool5, self.fc6, self.fc7)
         first_up = self.activate(self.deconv1(first5))
         first_skip = first2[:, :, 4:-4, 4:-4]
         first8 = self.activate(self.conv8(first_skip + first_up))
@@ -134,16 +139,16 @@ class Waifu2xCunetNoise0X2(nn.Module):
         second11 = self.activate(self.conv11(second10))
         second12 = self.activate(self.conv12(second11))
         second13 = self.activate(self.conv13(second12))
-        second13 = self.squeeze_excite(second13, self.fc14, self.fc15)
+        second13 = self.squeeze_excite(second13, self.pool13, self.fc14, self.fc15)
         second16 = self.activate(self.conv16(second13))
         second17 = self.activate(self.conv17(second16))
         second18 = self.activate(self.conv18(second17))
-        second18 = self.squeeze_excite(second18, self.fc19, self.fc20)
+        second18 = self.squeeze_excite(second18, self.pool18, self.fc19, self.fc20)
         second_up3 = self.activate(self.deconv3(second18))
         second_skip13 = second13[:, :, 4:-4, 4:-4]
         second21 = self.activate(self.conv21(second_skip13 + second_up3))
         second22 = self.activate(self.conv22(second21))
-        second22 = self.squeeze_excite(second22, self.fc23, self.fc24)
+        second22 = self.squeeze_excite(second22, self.pool22, self.fc23, self.fc24)
         second_up4 = self.activate(self.deconv4(second22))
         second_skip10 = second10[:, :, 16:-16, 16:-16]
         second25 = self.activate(self.conv25(second_skip10 + second_up4))
