@@ -21,7 +21,7 @@
   "applicationIntegrationRequired": false,
   "applicationIntegration": "NextE runs fixed 172 px luminance tiles through NNRT, crops the 8 px output context, and reconstructs RGB over one shared bilinear 2x base.",
   "release": {
-    "tag": "espcn-x2-nnrt-v1",
-    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/espcn-x2-nnrt-v1"
+    "tag": "model-pack-v1.0.0",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.0.0"
   }
 }

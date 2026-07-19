@@ -26,7 +26,7 @@
   "applicationIntegrationRequired": false,
   "applicationIntegration": "The fixed 164 px NNRT input preserves the Reader 128 px tile, 18 px prepadding, and per-tile SE contract and emits the complete 256 px output tile.",
   "release": {
-    "tag": "realcugan-se-2x-conservative-nnrt-v1",
-    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/realcugan-se-2x-conservative-nnrt-v1"
+    "tag": "model-pack-v1.0.0",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.0.0"
   }
 }

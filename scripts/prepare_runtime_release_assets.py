@@ -8,6 +8,8 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import time
+import urllib.error
 import urllib.request
 
 
@@ -25,13 +27,20 @@ def fetch_asset(source: dict, artifact: dict, output_dir: Path) -> Path:
     part = output.with_suffix(output.suffix + ".part")
     if part.exists():
         part.unlink()
-    request = urllib.request.Request(
-        source["url"],
-        headers={"User-Agent": "NextE-Models-release-builder/1"},
-    )
+    request = urllib.request.Request(source["url"], headers={
+        "User-Agent": "NextE-Models-release-builder/1",
+    })
     try:
-        with urllib.request.urlopen(request, timeout=120) as response, part.open("wb") as stream:
-            shutil.copyfileobj(response, stream)
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(request, timeout=120) as response, part.open("wb") as stream:
+                    shutil.copyfileobj(response, stream)
+                break
+            except (TimeoutError, ConnectionError, urllib.error.URLError):
+                part.unlink(missing_ok=True)
+                if attempt == 3:
+                    raise
+                time.sleep(2 ** attempt)
         if part.stat().st_size != int(source["bytes"]):
             raise RuntimeError(f"{source['fileName']}: source size mismatch")
         if sha256(part) != source["sha256"]:

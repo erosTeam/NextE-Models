@@ -362,6 +362,8 @@ def main() -> int:
 
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
+    model_release_tag = manifest["releaseTag"]
+    require(model_release_tag == "model-pack-v1.0.0", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")
@@ -371,17 +373,24 @@ def main() -> int:
         urls = entry["artifact"].get("urls", [])
         if status == "published":
             require(urls, f"{entry['id']}: published model has no download URL")
+            source_urls = entry["artifact"].get("sourceUrls", [])
+            require(source_urls, f"{entry['id']}: published model has no pack source URL")
             require(
                 all(url.startswith("https://github.com/erosTeam/NextE-Models/releases/download/") for url in urls),
                 f"{entry['id']}: published URL must point to an immutable repository release",
             )
+            expected_url = (
+                "https://github.com/erosTeam/NextE-Models/releases/download/"
+                f"{model_release_tag}/{entry['artifact']['fileName']}"
+            )
+            require(urls == [expected_url], f"{entry['id']}: unified release URL drift")
         else:
             require(status == "candidate", f"{entry['id']}: unsupported status {status}")
             require(not urls, f"{entry['id']}: candidate must not expose download URLs")
 
     fp16_entry = next(entry for entry in entries if entry["id"] == candidate["modelId"])
     require(
-        {key: value for key, value in fp16_entry["artifact"].items() if key != "urls"} == candidate["artifact"],
+        {key: value for key, value in fp16_entry["artifact"].items() if key not in {"urls", "sourceUrls"}} == candidate["artifact"],
         "FP16 metadata drift",
     )
     if candidate["status"] == "published":
@@ -396,7 +405,7 @@ def main() -> int:
 
     waifu_entry = next(entry for entry in entries if entry["id"] == waifu_candidate["modelId"])
     require(
-        {key: value for key, value in waifu_entry["artifact"].items() if key != "urls"}
+        {key: value for key, value in waifu_entry["artifact"].items() if key not in {"urls", "sourceUrls"}}
         == waifu_candidate["artifact"],
         "waifu2x metadata drift",
     )
@@ -411,7 +420,7 @@ def main() -> int:
         entry for entry in entries if entry["id"] == waifu_art_candidate["modelId"]
     )
     require(
-        {key: value for key, value in waifu_art_entry["artifact"].items() if key != "urls"}
+        {key: value for key, value in waifu_art_entry["artifact"].items() if key not in {"urls", "sourceUrls"}}
         == waifu_art_candidate["artifact"],
         "waifu2x art metadata drift",
     )
@@ -432,7 +441,7 @@ def main() -> int:
         entry for entry in entries if entry["id"] == waifu_cunet_candidate["modelId"]
     )
     require(
-        {key: value for key, value in waifu_cunet_entry["artifact"].items() if key != "urls"}
+        {key: value for key, value in waifu_cunet_entry["artifact"].items() if key not in {"urls", "sourceUrls"}}
         == waifu_cunet_candidate["artifact"],
         "waifu2x CUNet metadata drift",
     )
@@ -444,7 +453,7 @@ def main() -> int:
 
     espcn_entry = next(entry for entry in entries if entry["id"] == espcn_candidate["modelId"])
     require(
-        {key: value for key, value in espcn_entry["artifact"].items() if key != "urls"}
+        {key: value for key, value in espcn_entry["artifact"].items() if key not in {"urls", "sourceUrls"}}
         == espcn_candidate["artifact"],
         "ESPCN metadata drift",
     )
@@ -459,7 +468,7 @@ def main() -> int:
         entry for entry in entries if entry["id"] == realcugan_candidate["modelId"]
     )
     require(
-        {key: value for key, value in realcugan_entry["artifact"].items() if key != "urls"}
+        {key: value for key, value in realcugan_entry["artifact"].items() if key not in {"urls", "sourceUrls"}}
         == realcugan_candidate["artifact"],
         "Real-CUGAN metadata drift",
     )
@@ -479,14 +488,17 @@ def main() -> int:
     require(runtime_manifest["schemaVersion"] == 1, "runtime asset schema changed")
     require(runtime_manifest["status"] == "published", "runtime assets are not published")
     release_tag = runtime_manifest["releaseTag"]
-    require(release_tag == "ncnn-runtime-assets-v1", "unexpected runtime release tag")
+    require(release_tag == model_release_tag, "model and runtime release tags differ")
     runtime_ids: set[str] = set()
     runtime_names: set[str] = set()
     for entry in runtime_manifest["assets"]:
         asset_id = entry["id"]
         require(asset_id not in runtime_ids, f"duplicate runtime asset id: {asset_id}")
         runtime_ids.add(asset_id)
-        require(entry["license"] == "MIT", f"{asset_id}: unexpected runtime asset license")
+        require(
+            entry["license"] in {"MIT", "BSD-3-Clause"},
+            f"{asset_id}: unexpected runtime asset license",
+        )
         require(str(entry["upstream"]).startswith("https://github.com/"), f"{asset_id}: invalid upstream")
         source = entry["source"]
         artifact = entry["artifact"]
@@ -503,6 +515,16 @@ def main() -> int:
             f"{release_tag}/{artifact_name}"
         )
         require(artifact["urls"] == [expected_url], f"{asset_id}: release URL drift")
+    required_external_runtime_ids = {
+        "realesrgan_animevideov3_x2_param",
+        "realesrgan_animevideov3_x2_model",
+        "realesrgan_x2plus_source_param",
+        "realesrgan_x2plus_source_model",
+    }
+    require(
+        required_external_runtime_ids <= runtime_ids,
+        "unified model pack is missing selectable Real-ESRGAN runtime assets",
+    )
 
     ignores = (root / ".gitignore").read_text(encoding="utf-8")
     for private_path in ("calibration-data/", "evaluation-data/", "private-data/"):
@@ -527,6 +549,8 @@ def main() -> int:
     require(not forbidden, f"generated model data is tracked: {forbidden}")
     for path in tracked:
         full = root / path
+        if not full.exists():
+            continue
         require(full.stat().st_size < 5 * 1024 * 1024, f"large file belongs in Release: {path}")
 
     print(

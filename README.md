@@ -87,7 +87,7 @@ FP16 版本已经在四台设备的 NPU 上完成 `800 x 1149` 到 `1600 x 2298`
 端到端耗时处于约 6 到 7 秒量级，前台事件循环 P95 延迟为 1 到 2 毫秒。发布前仍需使用本地
 保留的实际页面进行肉眼画质对照；这些页面不会进入仓库或 Release。2026-07-19 的本地对照
 已确认输出没有切片接缝或填充伪影，相比 2x Lanczos 能恢复更清晰的线条和眼部细节，因此
-`realesrgan-x2plus-nnrt-v1` 已通过发布门禁。
+对应资产已通过发布门禁并纳入统一的 `model-pack-v1.0.0`。
 
 `Real-ESRGAN animevideov3 2x` 的首个 FP16 图仍保留为未发布候选。同一文件在 103 的 CPU
 后端可以加载和推理，但在 103、197、237 的 NNRT 后端均无法获得输入张量，说明当前图无法
@@ -97,14 +97,14 @@ FP16 版本已经在四台设备的 NPU 上完成 `800 x 1149` 到 `1600 x 2298`
 切片、8 px 输出上下文裁剪，以及在同一双线性 2x 底图上的 RGB 重组。103、197、237 三台
 设备的完整 Reader 管线均通过 NNRT/NPU：一张 800 x 1100 实际阅读图的输出相对固定 ncnn
 参考最大 RGB 字节误差为 2；应用 AUTO 路径处理约 1.1 到 1.3 秒，事件循环采样 P95 不超过
-2 毫秒。因此 `espcn-x2-nnrt-v1` 已通过发布门禁。
+2 毫秒，因此对应资产已通过发布门禁并纳入统一模型包。
 
 `waifu2x photo noise0 2x` 已从锁定的 ncnn upconv7 参数和 FP16 权重重建为固定
 `1 x 3 x 156 x 156` 输入、`1 x 3 x 284 x 284` 输出的 MindSpore Lite FP16 模型。修正
 Deconvolution 权重布局后，103、197、237 三台设备的完整 `800 x 1149` Reader 管线均通过
 NNRT/NPU 执行。与同一 ncnn 模型相比，拼接后 RGB 平均绝对误差约为 0.26 到 0.28、最大误差
-3 到 4，端到端耗时由约 9 秒降至约 3 秒。因此 `waifu2x-photo-noise0-x2-nnrt-v4` 已通过作为
-同模型加速后端的发布门禁；这里不把等价性测试表述为新模型的主观画质提升。
+3 到 4，端到端耗时由约 9 秒降至约 3 秒。因此对应资产已通过作为同模型加速后端的发布
+门禁并纳入统一模型包；这里不把等价性测试表述为新模型的主观画质提升。
 
 ## 发布门禁
 
@@ -112,20 +112,24 @@ NNRT/NPU 执行。与同一 ncnn 模型相比，拼接后 RGB 平均绝对误差
 2. 生成的文件尺寸和 SHA-256 写入候选记录。
 3. 在目标设备上验证模型 I/O、可加载性、稳定性和真实页面端到端耗时。
 4. 用保留的实际页面比较 FP16 与 INT8；校准页和评估页不离开本地。
-5. 只有通过门禁的条目才能在 `manifests/models-v1.json` 中改为 `published` 并填写真实
-   Release URL。
-6. Release 资产不可覆盖；任何改变使用新 tag 和新 SHA-256。
+5. 只有通过门禁的条目才能在 `manifests/models-v1.json` 中改为 `published`。
+6. 所有 `published` NNRT 和 ncnn 资产必须进入同一个版本化 `model-pack` Release；模型仍按
+   文件独立下载，不要求应用下载整个模型包。
+7. Release 资产不可覆盖；任何改变都发布新的模型包版本和 SHA-256。
 
 应用只应读取 `published` 条目。当前清单中的 `candidate` 不构成下载地址，也不会让
 NextE 下载一个尚未发布或未经验证的模型。
 
-## ncnn 运行资产
+## 统一模型包
 
-`manifests/ncnn-runtime-assets-v1.json` 管理无需重新转换的现有 ncnn 运行资产。发布工作流从
-固定 revision 或固定分发 URL 下载源文件，验证尺寸和 SHA-256 后使用不冲突的文件名发布到
-`ncnn-runtime-assets-v1`。当前覆盖 ESPCN source ZIP、waifu2x photo/art/CUNet 以及
-Real-CUGAN SE conservative；应用应优先使用本仓库 Release，并保留清单中的固定上游地址作为
-网络回退。
+`manifests/models-v1.json` 管理已验证的 NNRT 资产，`manifests/ncnn-runtime-assets-v1.json`
+管理无需重新转换的 ncnn 运行资产。唯一的发布工作流会收集两份清单中的全部有效文件，逐一
+验证尺寸与 SHA-256，并发布到同一个 `model-pack-vX.Y.Z` Release。当前模型包还覆盖
+Real-ESRGAN animevideov3 与 x2plus 的 ncnn 来源文件；应用优先使用本仓库 Release，并可保留
+清单中的固定上游地址作为网络回退。
+
+模型转换和候选验证工作流仍然按模型独立运行，但不再各自创建 Release。统一发布避免 tag、
+下载地址和资产版本互相漂移，同时不改变应用按需下载单个模型文件的行为。
 
 这份运行资产清单不表示对应模型已经支持 NPU。NPU 模型仍必须经过上面的转换、候选、多设备
 NNRT 和整页画质门禁，只有 `manifests/models-v1.json` 中的 `published` 条目可以作为 NPU

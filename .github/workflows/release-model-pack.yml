@@ -1,0 +1,38 @@
+name: Release unified model pack
+
+on:
+  push:
+    tags:
+      - "model-pack-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate unified release manifests
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python -c 'import json,os; models=json.load(open("manifests/models-v1.json")); runtime=json.load(open("manifests/ncnn-runtime-assets-v1.json")); assert models["releaseTag"]==os.environ["RELEASE_TAG"]; assert runtime["releaseTag"]==os.environ["RELEASE_TAG"]'
+          python scripts/validate_repository.py
+      - name: Collect and verify all published assets
+        run: |
+          python scripts/prepare_model_pack_release_assets.py \
+            --models-manifest manifests/models-v1.json \
+            --runtime-manifest manifests/ncnn-runtime-assets-v1.json \
+            --output artifacts/model-pack
+          cp manifests/models-v1.json artifacts/model-pack/models-v1.json
+          cp manifests/ncnn-runtime-assets-v1.json artifacts/model-pack/ncnn-runtime-assets-v1.json
+      - name: Create immutable model-pack release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" artifacts/model-pack/* \
+            --verify-tag --generate-notes --title "$GITHUB_REF_NAME"

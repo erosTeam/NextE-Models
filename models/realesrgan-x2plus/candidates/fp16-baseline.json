@@ -17,7 +17,7 @@
     "qualityValidated": true
   },
   "release": {
-    "tag": "realesrgan-x2plus-nnrt-v1",
-    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/realesrgan-x2plus-nnrt-v1"
+    "tag": "model-pack-v1.0.0",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.0.0"
   }
 }
