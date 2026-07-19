@@ -2,6 +2,13 @@ name: Build Real-CUGAN NNRT probes
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build-realcugan-nnrt-probes.yml"
+      - "models/realcugan-se-2x-conservative/source.lock.json"
+      - "scripts/convert_mindspore.py"
+      - "scripts/export_realcugan_se_2x_conservative_onnx.py"
+      - "scripts/fetch_locked_source.py"
 
 permissions:
   contents: read
