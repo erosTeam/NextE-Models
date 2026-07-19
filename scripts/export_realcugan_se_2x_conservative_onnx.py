@@ -68,6 +68,32 @@ class FixedAveragePoolSE(nn.Module):
         return value * gate
 
 
+class SliceProbe(nn.Module):
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        return value[:, :, 4:-4, 4:-4]
+
+
+def export_probe(module: nn.Module, shape: tuple[int, ...], output: Path, opset: int) -> None:
+    sample = torch.linspace(0.0, 1.0, steps=int(np.prod(shape)), dtype=torch.float32).reshape(shape)
+    module = module.eval()
+    with torch.no_grad():
+        result = module(sample)
+    if not bool(torch.isfinite(result).all()):
+        raise RuntimeError(f"probe {output.stem} produced non-finite output")
+    torch.onnx.export(
+        module,
+        sample,
+        output,
+        export_params=True,
+        opset_version=opset,
+        do_constant_folding=True,
+        input_names=["input"],
+        output_names=["output"],
+    )
+    onnx.checker.check_model(onnx.load(output))
+    print(f"probe={output.name} shape={shape} bytes={output.stat().st_size} sha256={sha256(output)}")
+
+
 def replace_se_means(model: nn.Module) -> None:
     # Fixed feature sizes derive from the locked 178 px input contract. AveragePool is
     # mathematically equivalent to ReduceMean here and maps through a distinct NNRT operator path.
@@ -87,6 +113,7 @@ def main() -> int:
     parser.add_argument("--checkpoint", required=True, type=Path)
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--probe-directory", type=Path)
     parser.add_argument(
         "--lock",
         type=Path,
@@ -159,6 +186,20 @@ def main() -> int:
         f"outputRange={float(output.min()):.9g}..{float(output.max()):.9g} "
         f"maximumRewriteError={maximum_rewrite_error:.9g}"
     )
+    if args.probe_directory is not None:
+        args.probe_directory.mkdir(parents=True, exist_ok=True)
+        opset = int(lock["export"]["opset"])
+        probes: tuple[tuple[str, nn.Module, tuple[int, ...]], ...] = (
+            ("slice", SliceProbe(), (1, 3, 178, 178)),
+            ("se83", model.unet1.conv2.seblock, (1, 64, 83, 83)),
+            ("stride2-conv", model.unet1.conv1_down, (1, 64, 174, 174)),
+            ("deconv2", model.unet1.conv2_up, (1, 64, 83, 83)),
+            ("deconv4", model.unet1.conv_bottom, (1, 64, 164, 164)),
+            ("unet1", model.unet1, (1, 3, 178, 178)),
+            ("unet2", model.unet2, (1, 3, 324, 324)),
+        )
+        for name, module, shape in probes:
+            export_probe(module, shape, args.probe_directory / f"{name}.onnx", opset)
     return 0
 
 
