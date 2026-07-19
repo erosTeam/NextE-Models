@@ -128,7 +128,9 @@ def main() -> int:
     with torch.no_grad():
         output = tile(sample)
     maximum_rewrite_error = float(torch.max(torch.abs(output - reference_output)))
-    if maximum_rewrite_error > 1.0e-6:
+    # Torch's ReduceMean and AvgPool accumulation order differs by at most a few ULPs here.
+    # 2e-6 is below 0.001 of one 8-bit output step and remains far tighter than Reader QA.
+    if maximum_rewrite_error > 2.0e-6:
         raise RuntimeError(
             f"fixed AveragePool SE rewrite changed output by {maximum_rewrite_error}"
         )
