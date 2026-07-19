@@ -59,6 +59,13 @@ def main() -> int:
     runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
     waifu_lock = load(root / "models/waifu2x-photo-noise0-x2/source.lock.json")
     waifu_art_lock = load(root / "models/waifu2x-art-noise0-x2/source.lock.json")
+    waifu_art_candidate = load(
+        root / "models/waifu2x-art-noise0-x2/candidates/fp16-baseline.json"
+    )
+    waifu_art_reader_matrix = load(
+        root
+        / "models/waifu2x-art-noise0-x2/experiments/fp16-reader-equivalence-device-matrix-20260719.json"
+    )
     waifu_candidate = load(
         root / "models/waifu2x-photo-noise0-x2/candidates/fp16-baseline.json"
     )
@@ -125,6 +132,28 @@ def main() -> int:
     require(waifu_art_contract["outputShape"] == [1, 3, 284, 284], "waifu2x art output shape changed")
     require(waifu_art_contract["tileSize"] == 142, "waifu2x art tile size changed")
     require(waifu_art_contract["prepadding"] == 7, "waifu2x art prepadding changed")
+    validate_artifact(waifu_art_candidate["artifact"], "waifu2x art FP16 candidate")
+    validate_artifact(waifu_art_reader_matrix["artifact"], "waifu2x art Reader matrix")
+    require(
+        waifu_art_reader_matrix["artifact"] == waifu_art_candidate["artifact"],
+        "waifu2x art Reader evidence artifact drift",
+    )
+    validate_device_coverage(
+        waifu_art_candidate["deviceEvidence"]["deviceSelectors"],
+        waifu_art_reader_matrix["devices"],
+    )
+    for device in waifu_art_reader_matrix["devices"]:
+        label = f"waifu2x art Reader device {device['deviceSelector']}"
+        require(device["passed"] is True, f"{label}: Reader benchmark did not pass")
+        require(
+            str(device["selectedAccelerator"]).startswith("NPU_"),
+            f"{label}: selected accelerator is not an enumerated NPU",
+        )
+        require(int(device["nnrtProcessElapsedMs"]) > 0, f"{label}: invalid NNRT process time")
+        require(int(device["ncnnProcessElapsedMs"]) > 0, f"{label}: invalid ncnn process time")
+        require(float(device["meanAbsoluteError"]) < 0.4, f"{label}: mean output error too large")
+        require(int(device["maximumAbsoluteError"]) <= 2, f"{label}: maximum output error too large")
+        require(int(device["samplesOverFour"]) == 0, f"{label}: severe output error")
     validate_artifact(waifu_candidate["artifact"], "waifu2x FP16 candidate")
     validate_artifact(waifu_matrix["artifact"], "waifu2x FP16 device matrix")
     validate_artifact(waifu_reader_matrix["artifact"], "waifu2x FP16 Reader matrix")
@@ -326,6 +355,27 @@ def main() -> int:
     require(waifu_candidate["deviceEvidence"]["qualityValidated"] is True, "waifu2x quality equivalence missing")
     require(waifu_candidate["release"] is not None, "published waifu2x candidate has no release")
     require(bool(waifu_entry["artifact"]["urls"]), "published waifu2x artifact URL missing")
+
+    waifu_art_entry = next(
+        entry for entry in entries if entry["id"] == waifu_art_candidate["modelId"]
+    )
+    require(
+        {key: value for key, value in waifu_art_entry["artifact"].items() if key != "urls"}
+        == waifu_art_candidate["artifact"],
+        "waifu2x art metadata drift",
+    )
+    require(waifu_art_candidate["status"] == "published", "waifu2x art publication state drift")
+    require(waifu_art_entry["status"] == "published", "waifu2x art manifest publication drift")
+    require(
+        waifu_art_candidate["deviceEvidence"]["endToEndReaderValidated"] is True,
+        "waifu2x art Reader validation missing",
+    )
+    require(
+        waifu_art_candidate["deviceEvidence"]["qualityValidated"] is True,
+        "waifu2x art quality equivalence missing",
+    )
+    require(waifu_art_candidate["release"] is not None, "published waifu2x art candidate has no release")
+    require(bool(waifu_art_entry["artifact"]["urls"]), "published waifu2x art artifact URL missing")
 
     espcn_entry = next(entry for entry in entries if entry["id"] == espcn_candidate["modelId"])
     require(

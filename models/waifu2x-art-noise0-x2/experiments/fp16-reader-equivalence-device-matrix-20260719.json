@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_art_noise0_x2_nnrt_fp16",
+  "status": "reader_pipeline_validated",
+  "artifact": {
+    "fileName": "waifu2x-art-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "1ee87330e366afb0ad84752ab7e1acecbbcdbc17ee15ed18e546f336fe85bf52"
+  },
+  "reference": {
+    "engine": "ncnn-vulkan",
+    "upstreamRevision": "64914665c45893135c9e50c1c296170a121b9f77",
+    "parameterSha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
+    "weightsSha256": "e1d2c4d91be98e72c0d48d08626cbe7d879aa2b80f740133dcc0d860eabb4189"
+  },
+  "benchmark": {
+    "date": "2026-07-19",
+    "scope": "NextE native tiling, model prediction, valid-region crop, and complete RGB output stitching",
+    "input": "retained real Reader page",
+    "sourceSize": [800, 1100],
+    "outputSize": [1600, 2200],
+    "tileCount": 48,
+    "ncnnTileSize": 142,
+    "ncnnShrinkSize": 7,
+    "nnrtInputShape": [1, 3, 156, 156],
+    "nnrtOutputShape": [1, 3, 284, 284],
+    "comparisonSamples": 10560000,
+    "metric": "absolute difference over stitched RGB bytes"
+  },
+  "devices": [
+    {
+      "deviceSelector": "103",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.Kirin9010B_v2_0",
+      "ncnnProcessElapsedMs": 9204,
+      "ncnnInferenceMs": 4168,
+      "nnrtProcessElapsedMs": 2984,
+      "nnrtInferenceMs": 844,
+      "meanAbsoluteError": 0.09461051136363637,
+      "maximumAbsoluteError": 2,
+      "samplesOverFour": 0,
+      "passed": true
+    },
+    {
+      "deviceSelector": "197",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9000s_v2_0",
+      "ncnnProcessElapsedMs": 6631,
+      "ncnnInferenceMs": 3677,
+      "nnrtProcessElapsedMs": 2980,
+      "nnrtInferenceMs": 771,
+      "meanAbsoluteError": 0.09461051136363637,
+      "maximumAbsoluteError": 2,
+      "samplesOverFour": 0,
+      "passed": true
+    },
+    {
+      "deviceSelector": "237",
+      "selectedAccelerator": "NPU_ohos.boot.hardware.kirin9020_v2_0",
+      "ncnnProcessElapsedMs": 6835,
+      "ncnnInferenceMs": 3358,
+      "nnrtProcessElapsedMs": 2984,
+      "nnrtInferenceMs": 946,
+      "meanAbsoluteError": 0.3389255681818182,
+      "maximumAbsoluteError": 2,
+      "samplesOverFour": 0,
+      "passed": true
+    }
+  ],
+  "decision": "Accept the FP16 artifact for replacing the same waifu2x art model's ncnn backend. On a retained 800x1100 Reader page, all three NPU implementations stay within two RGB byte values of the reference with no samples above four while process time drops to about three seconds."
+}

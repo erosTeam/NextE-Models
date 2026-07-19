@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "modelId": "waifu2x_art_noise0_x2_nnrt_fp16",
+  "status": "published",
+  "sourceOnnx": {
+    "fileName": "waifu2x-art-noise0-x2-156.onnx",
+    "bytes": 2212864,
+    "sha256": "54509e6554d908f907d8b23acee9874736c74da6d116bc914d7bf597719724ff"
+  },
+  "artifact": {
+    "fileName": "waifu2x-art-noise0-x2-156-fp16.ms",
+    "bytes": 1110528,
+    "sha256": "1ee87330e366afb0ad84752ab7e1acecbbcdbc17ee15ed18e546f336fe85bf52"
+  },
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "qualityEvidenceRef": "../experiments/fp16-reader-equivalence-device-matrix-20260719.json",
+  "deviceEvidence": {
+    "scope": "full NextE Reader pipeline against the pinned ncnn reference",
+    "deviceSelectors": ["103", "197", "237"],
+    "endToEndReaderValidated": true,
+    "qualityValidated": true
+  },
+  "runtimeValidationRequired": false,
+  "sourceGraphEquivalenceRequired": false,
+  "qualityValidationRequired": false,
+  "applicationIntegrationRequired": false,
+  "applicationIntegration": "The fixed-shape NNRT graph uses the existing Reader 142 px tile plus 7 px shrink contract and matches the pinned ncnn output for a retained real Reader page on all validated devices.",
+  "release": {
+    "tag": "waifu2x-art-noise0-x2-nnrt-v1",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/waifu2x-art-noise0-x2-nnrt-v1"
+  }
+}

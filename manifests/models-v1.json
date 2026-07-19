@@ -118,6 +118,30 @@
         "outputFormat": "NCHW",
         "outputShape": [1, 3, 284, 284]
       }
+    },
+    {
+      "id": "waifu2x_art_noise0_x2_nnrt_fp16",
+      "displayName": "waifu2x art noise0 2x",
+      "variant": "fp16",
+      "status": "published",
+      "scale": 2,
+      "artifact": {
+        "fileName": "waifu2x-art-noise0-x2-156-fp16.ms",
+        "bytes": 1110528,
+        "sha256": "1ee87330e366afb0ad84752ab7e1acecbbcdbc17ee15ed18e546f336fe85bf52",
+        "urls": [
+          "https://github.com/erosTeam/NextE-Models/releases/download/waifu2x-art-noise0-x2-nnrt-v1/waifu2x-art-noise0-x2-156-fp16.ms"
+        ]
+      },
+      "runtime": {
+        "engine": "mindspore-lite-nnrt",
+        "inputDataType": "FLOAT32",
+        "inputFormat": "NCHW",
+        "inputShape": [1, 3, 156, 156],
+        "outputDataType": "FLOAT32",
+        "outputFormat": "NCHW",
+        "outputShape": [1, 3, 284, 284]
+      }
     }
   ]
 }
