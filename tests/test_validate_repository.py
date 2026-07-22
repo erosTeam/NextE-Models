@@ -36,5 +36,10 @@ class ValidateDeviceCoverageTest(unittest.TestCase):
             )
 
 
+class ValidateComicModelsTest(unittest.TestCase):
+    def test_repository_comic_model_metadata_is_consistent(self) -> None:
+        self.assertEqual(MODULE.validate_comic_models(ROOT), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

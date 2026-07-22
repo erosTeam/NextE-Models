@@ -41,6 +41,81 @@ def validate_device_coverage(required_selectors: list[str], devices: list[dict])
     )
 
 
+def validate_comic_models(root: Path) -> int:
+    manifest = load(root / "manifests/comic-translation-models-v1.json")
+    lock = load(root / "models/ysgyolo-1.2-os1/source.lock.json")
+    candidate = load(
+        root / "models/ysgyolo-1.2-os1/candidates/ncnn-fp32-v1.json"
+    )
+    evidence = load(
+        root / "models/ysgyolo-1.2-os1/evidence/device-237-20260722.json"
+    )
+
+    disposition = lock["licenseDisposition"]
+    require(
+        lock["upstream"]["authorDeclaredLicense"] == "MIT",
+        "YSGYolo author-declared license evidence changed",
+    )
+    require(
+        disposition["effectiveDistributionLicense"] == "AGPL-3.0-only",
+        "YSGYolo must retain its conservative artifact license",
+    )
+    for label in ("checkpoint", "sourceOnnx"):
+        source = lock[label]
+        validate_artifact(source, f"YSGYolo {label}")
+        require(str(source["url"]).startswith("https://"), f"{label}: HTTPS URL required")
+    contract = lock["runtimeContract"]
+    require(contract["inputShape"] == [1, 3, 640, 640], "YSGYolo input shape changed")
+    require(contract["outputShape"] == [11, 8400], "YSGYolo output shape changed")
+    require(contract["inputFormat"] == "NCHW", "YSGYolo input format changed")
+    require(
+        all(value is False for value in contract["ncnnOptions"].values()),
+        "YSGYolo candidate must keep FP16, packing, and Vulkan disabled",
+    )
+
+    require(candidate["status"] == "device_validated", "YSGYolo device gate is missing")
+    require(candidate["license"] == "AGPL-3.0-only", "YSGYolo candidate license drift")
+    require(candidate["numericalParity"]["passed"] is True, "YSGYolo parity failed")
+    require(evidence["result"]["passed"] is True, "YSGYolo device evidence failed")
+    require(evidence["device"]["deviceSelector"] == "237", "YSGYolo device selector changed")
+    require(evidence["result"]["regions"] > 0, "YSGYolo device result is empty")
+
+    candidate_artifacts = candidate["artifacts"]
+    for artifact in candidate_artifacts:
+        validate_artifact(artifact, f"YSGYolo candidate {artifact['fileName']}")
+    entries = manifest.get("models", [])
+    require(entries, "comic model manifest is empty")
+    ids: set[str] = set()
+    for entry in entries:
+        require(entry["id"] not in ids, f"duplicate comic model id: {entry['id']}")
+        ids.add(entry["id"])
+        require(entry["role"], f"{entry['id']}: model role is missing")
+        for artifact in entry["artifacts"]:
+            validate_artifact(artifact, f"{entry['id']} {artifact['fileName']}")
+            urls = artifact.get("urls", [])
+            if entry["status"] == "published":
+                require(urls, f"{entry['id']}: published artifact has no URL")
+                require(
+                    all(url.startswith(
+                        "https://github.com/erosTeam/NextE-Models/releases/download/"
+                    ) for url in urls),
+                    f"{entry['id']}: published URL must point to an immutable release",
+                )
+            else:
+                require(entry["status"] == "candidate", f"unsupported status: {entry['status']}")
+                require(not urls, f"{entry['id']}: candidate must not expose URLs")
+    ysg = next(entry for entry in entries if entry["id"] == candidate["modelId"])
+    require(ysg["license"] == candidate["license"], "YSGYolo license metadata drift")
+    require(
+        [
+            {key: value for key, value in artifact.items() if key != "urls"}
+            for artifact in ysg["artifacts"]
+        ] == candidate_artifacts,
+        "YSGYolo artifact metadata drift",
+    )
+    return len(entries)
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     lock = load(root / "models/realesrgan-x2plus/source.lock.json")
@@ -56,6 +131,7 @@ def main() -> int:
     )
     experiment = load(root / "models/realesrgan-x2plus/experiments/weight-int8-device-103.json")
     manifest = load(root / "manifests/models-v1.json")
+    comic_model_count = validate_comic_models(root)
     runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
     waifu_lock = load(root / "models/waifu2x-photo-noise0-x2/source.lock.json")
     waifu_art_lock = load(root / "models/waifu2x-art-noise0-x2/source.lock.json")
@@ -540,6 +616,8 @@ def main() -> int:
         "Real-CUGAN architecture and checkpoint",
     ):
         require(notice in notices, f"third-party notice is missing: {notice}")
+    require("YSGYolo" in notices, "YSGYolo notice is missing")
+    require("AGPL-3.0-only" in notices, "YSGYolo effective license is missing")
 
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True
@@ -555,7 +633,8 @@ def main() -> int:
 
     print(
         f"repository validation passed: models={len(entries)} "
-        f"runtimeAssets={len(runtime_ids)} trackedFiles={len(tracked)}"
+        f"runtimeAssets={len(runtime_ids)} comicModels={comic_model_count} "
+        f"trackedFiles={len(tracked)}"
     )
     return 0
 

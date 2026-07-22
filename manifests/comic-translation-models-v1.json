@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "models": [
+    {
+      "id": "ysgyolo_1_2_os1_ncnn_fp32",
+      "displayName": "YSGYolo 1.2 OS1.0",
+      "role": "comic-region-detector",
+      "status": "candidate",
+      "license": "AGPL-3.0-only",
+      "artifacts": [
+        {
+          "fileName": "ysgyolo_1.2_OS1.0.ncnn.param",
+          "bytes": 27031,
+          "sha256": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987",
+          "urls": []
+        },
+        {
+          "fileName": "ysgyolo_1.2_OS1.0.ncnn.bin",
+          "bytes": 10720760,
+          "sha256": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00",
+          "urls": []
+        }
+      ],
+      "runtime": {
+        "engine": "ncnn-cpu",
+        "precision": "fp32",
+        "inputName": "in0",
+        "inputShape": [1, 3, 640, 640],
+        "inputFormat": "NCHW",
+        "outputName": "out0",
+        "outputShape": [11, 8400]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "modelId": "ysgyolo_1_2_os1_ncnn_fp32",
+  "date": "2026-07-22",
+  "scope": "HarmonyOS NextE N-API detector load and inference",
+  "artifactHashes": {
+    "param": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987",
+    "bin": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00"
+  },
+  "device": {
+    "deviceSelector": "237",
+    "productModel": "VDE-AL00"
+  },
+  "input": {
+    "origin": "NextE synthetic comic translation evaluation fixture",
+    "width": 1024,
+    "height": 1536,
+    "sha256": "b12a64700e64a9e707152d0570a8af8c5296055226f953c769307cb59e3176a9"
+  },
+  "result": {
+    "backend": "ncnn-fp32-cpu",
+    "regions": 5,
+    "modelLoadMs": 39,
+    "firstInferenceMs": 207,
+    "warmInferenceMs": 160,
+    "fullHypium": {
+      "tests": 253,
+      "passed": 253,
+      "failed": 0
+    },
+    "passed": true
+  },
+  "notes": "The model files were temporary ohosTest resources for this evidence run and were removed after validation. Production download integration is gated on the immutable release."
+}

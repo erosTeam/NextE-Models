@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "modelId": "ysgyolo_1_2_os1_ncnn_fp32",
+  "status": "device_validated",
+  "license": "AGPL-3.0-only",
+  "artifacts": [
+    {
+      "fileName": "ysgyolo_1.2_OS1.0.ncnn.param",
+      "bytes": 27031,
+      "sha256": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987"
+    },
+    {
+      "fileName": "ysgyolo_1.2_OS1.0.ncnn.bin",
+      "bytes": 10720760,
+      "sha256": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00"
+    }
+  ],
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../evidence/device-237-20260722.json",
+  "numericalParity": {
+    "reference": "ONNX Runtime 1.27",
+    "maximumAbsoluteError": 0.001312,
+    "meanAbsoluteError": 0.00001466,
+    "p99AbsoluteError": 0.000267,
+    "allCloseAtol": 0.001,
+    "passed": true
+  },
+  "release": null
+}

@@ -95,3 +95,21 @@ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPO
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## YSGYolo 1.2 OS1.0
+
+YSGYolo is an optional, separately downloaded manga region detector. It is not linked into the
+NextE application package.
+
+- Model repository: https://huggingface.co/YSGforMTL/YSGYoloDetector
+- Pinned revision: `563aba14fe3ba9e8c5ea1c8074598365190b3705`
+- Runtime architecture: Ultralytics YOLO11 OBB
+- Effective artifact distribution license: `AGPL-3.0-only`
+- License text: https://www.gnu.org/licenses/agpl-3.0.txt
+- Source and hashes: `models/ysgyolo-1.2-os1/source.lock.json`
+
+The model card declares MIT. The pinned checkpoint itself contains Ultralytics module metadata,
+`yolo11n-obb.yaml`, and an embedded `AGPL-3.0` license value. Because those two signals conflict,
+this repository distributes the checkpoint and derived ONNX/ncnn artifacts under the stricter
+AGPL-3.0-only label. This is an engineering compliance boundary, not a representation that one
+party can relicense another party's work.
