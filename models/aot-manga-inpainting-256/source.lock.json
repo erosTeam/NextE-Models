@@ -73,8 +73,9 @@
     "outputName": "out0",
     "outputDataType": "FLOAT32",
     "outputShape": [1, 3, 256, 256],
+    "dynamicSpatialDimensions": true,
     "outputNormalization": "BGR clipped to [-1, 1]",
-    "preprocessing": "bounded RGBA crop up to 1024 px per edge; aspect fit to 256 with reflection padding",
+    "preprocessing": "bounded BGRA crop up to 1024 px per edge; preserve source scale and reflect-pad spatial dimensions to multiples of 8",
     "compositing": "replace masked RGB only; preserve every unmasked RGB byte and all alpha bytes",
     "ncnnOptions": {
       "usePackingLayout": false,

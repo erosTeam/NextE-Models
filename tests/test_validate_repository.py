@@ -38,7 +38,7 @@ class ValidateDeviceCoverageTest(unittest.TestCase):
 
 class ValidateComicModelsTest(unittest.TestCase):
     def test_repository_comic_model_metadata_is_consistent(self) -> None:
-        self.assertEqual(MODULE.validate_comic_models(ROOT), 3)
+        self.assertEqual(MODULE.validate_comic_models(ROOT), 4)
 
 
 if __name__ == "__main__":

@@ -180,8 +180,9 @@ python scripts/convert_ppocrv5_mobile_rec_to_ncnn.py \
 Release 同时包含三份 Paddle 原始推理文件、来源锁、Apache-2.0 文本、ncnn param/bin 和字符
 字典。
 
-`AOT Manga Inpainting 256` 负责在文字掩码内重建背景。端侧只把有界区域缩放并反射填充到
-256×256，ncnn 推理后仅替换掩码内 RGB；掩码外 RGB 与整图 alpha 必须逐字节不变：
+`AOT Manga Inpainting 256` 负责在文字掩码内重建背景。端侧保留有界区域的原始比例，只反射
+填充到 8 的倍数，不拉伸窄长气泡；其卷积图支持动态空间尺寸。ncnn 推理后仅替换掩码内 RGB；
+掩码外 RGB 与整图 alpha 必须逐字节不变：
 
 ```bash
 python scripts/convert_aot_manga_inpainting_to_ncnn.py \
@@ -195,5 +196,21 @@ python scripts/convert_aot_manga_inpainting_to_ncnn.py \
 `manga-image-translator`，因此衍生 ONNX/ncnn 权重按 `GPL-3.0-only` 分发。Release 同时携带
 两条来源及两份许可文本，不把“多来源许可”误写成同一权重可任选许可。
 
-应用设置中仍是一个“端侧漫画模型”能力包，但 YSGYolo、PP-OCRv5 与 AOT 修复模型的许可分别
-展示和保留。
+`Comic Text Detector Mask 1024` 从 `comictextdetector.pt.onnx` 中只提取像素级文字分割头，
+不替代 YSGYolo 的气泡/文字区域召回。输入按原实现保持宽高比缩放到 1024 方形的左上角，
+右侧和底部补零；输出裁掉补边、缩放回源 tile，再以 0.3 阈值生成逐像素 mask：
+
+```bash
+python scripts/convert_comic_text_mask_ctd_to_ncnn.py \
+  --pnnx /path/to/pnnx \
+  --onnx downloads/comictextdetector.pt.onnx \
+  --output-dir artifacts/comic-generated
+```
+
+原始 CTD 实现和发布该 ONNX 的 `manga-image-translator` 均为 GPL-3.0 项目，因此提取后的分割图
+与 ncnn FP16 权重按 `GPL-3.0-only` 分发。Release 携带原始 ONNX、固定来源、转换脚本和完整许可。
+237 设备上的 1024×1536 自有合成样页验证为冷推理 562 ms、热推理 502 ms，mask 覆盖率 1.87%；
+这是模型运行门禁，不等同于整页排版或最终视觉验收。
+
+应用设置中仍是一个“端侧漫画模型”能力包，但 YSGYolo、CTD、PP-OCRv5 与 AOT 四个组件的
+职责和许可分别展示、分别保留。

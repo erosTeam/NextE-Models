@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "modelId": "comic_text_mask_ctd_1024_ncnn_fp16",
+  "upstream": {
+    "modelReleaseRepository": "https://github.com/zyddnys/manga-image-translator",
+    "modelRelease": "beta-0.3",
+    "detectorRepository": "https://github.com/dmMaze/comic-text-detector",
+    "detectorRevision": "440b978563c71b758e31aaa315d100faba1efa2f",
+    "architecture": "Comic Text Detector segmentation head"
+  },
+  "sourceOnnx": {
+    "fileName": "comictextdetector.pt.onnx",
+    "url": "https://github.com/zyddnys/manga-image-translator/releases/download/beta-0.3/comictextdetector.pt.onnx",
+    "bytes": 94669756,
+    "sha256": "1a86ace74961413cbd650002e7bb4dcec4980ffa21b2f19b86933372071d718f"
+  },
+  "licenseDisposition": {
+    "effectiveDistributionLicense": "GPL-3.0-only",
+    "reason": "The pinned detector implementation and the release that distributes the source ONNX are GPL-3.0 projects. The extracted segmentation graph and derived ncnn weights retain GPL-3.0-only distribution."
+  },
+  "licenseText": {
+    "fileName": "LICENSE",
+    "url": "https://raw.githubusercontent.com/dmMaze/comic-text-detector/440b978563c71b758e31aaa315d100faba1efa2f/LICENSE",
+    "bytes": 35149,
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+  },
+  "conversion": {
+    "python": "3.11",
+    "onnx": "1.18.0",
+    "pnnx": "20260526",
+    "ncnn": "20260526",
+    "command": "python scripts/convert_comic_text_mask_ctd_to_ncnn.py --pnnx /path/to/pnnx --onnx downloads/comictextdetector.pt.onnx --output-dir artifacts/comic-generated",
+    "extractedOnnx": {
+      "bytes": 65568468,
+      "sha256": "0063cc01e9d41844cb3920076a5290040e4dd0f86547dbf37cd1634f9255ed04"
+    },
+    "pnnxOptions": [
+      "inputshape=[1,3,1024,1024]",
+      "fp16=1"
+    ]
+  },
+  "runtimeContract": {
+    "inputName": "in0",
+    "inputDataType": "FLOAT32",
+    "inputFormat": "NCHW",
+    "inputShape": [1, 3, 1024, 1024],
+    "pixelOrder": "RGB",
+    "normalization": "value / 255.0",
+    "preprocessing": "aspect-preserving resize into 1024 square; top-left placement; zero padding on right and bottom",
+    "outputName": "out0",
+    "outputDataType": "FLOAT32",
+    "outputShape": [1, 1, 1024, 1024],
+    "maskThreshold": 0.3,
+    "postprocessing": "remove right/bottom padding, bilinear resize to source tile, threshold to one byte per pixel",
+    "ncnnOptions": {
+      "usePackingLayout": true,
+      "useFp16Packed": true,
+      "useFp16Storage": true,
+      "useFp16Arithmetic": true,
+      "useVulkanCompute": false
+    }
+  }
+}

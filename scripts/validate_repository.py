@@ -75,6 +75,15 @@ def validate_comic_models(root: Path) -> int:
     aot_evidence = load(
         root / "models/aot-manga-inpainting-256/evidence/device-237-20260722.json"
     )
+    text_mask_lock = load(
+        root / "models/comic-text-mask-ctd-1024/source.lock.json"
+    )
+    text_mask_candidate = load(
+        root / "models/comic-text-mask-ctd-1024/candidates/ncnn-fp16-v1.json"
+    )
+    text_mask_evidence = load(
+        root / "models/comic-text-mask-ctd-1024/evidence/device-237-20260722.json"
+    )
 
     disposition = lock["licenseDisposition"]
     require(
@@ -258,6 +267,72 @@ def validate_comic_models(root: Path) -> int:
     aot_candidate_artifacts = aot_candidate["artifacts"]
     for artifact in aot_candidate_artifacts:
         validate_artifact(artifact, f"AOT manga candidate {artifact['fileName']}")
+
+    require(
+        text_mask_lock["upstream"]["detectorRevision"] ==
+        "440b978563c71b758e31aaa315d100faba1efa2f",
+        "CTD source revision drift",
+    )
+    require(
+        text_mask_lock["licenseDisposition"]["effectiveDistributionLicense"] ==
+        "GPL-3.0-only",
+        "CTD mask artifact must retain GPL-3.0-only distribution",
+    )
+    for label in ("sourceOnnx", "licenseText"):
+        source = text_mask_lock[label]
+        validate_artifact(source, f"CTD mask {label}")
+        require(str(source["url"]).startswith("https://"), f"CTD mask {label}: HTTPS required")
+    text_mask_contract = text_mask_lock["runtimeContract"]
+    require(
+        text_mask_contract["inputShape"] == [1, 3, 1024, 1024],
+        "CTD mask input shape changed",
+    )
+    require(
+        text_mask_contract["outputShape"] == [1, 1, 1024, 1024],
+        "CTD mask output shape changed",
+    )
+    require(
+        text_mask_contract["maskThreshold"] == 0.3,
+        "CTD mask threshold changed",
+    )
+    require(
+        text_mask_contract["ncnnOptions"] == {
+            "usePackingLayout": True,
+            "useFp16Packed": True,
+            "useFp16Storage": True,
+            "useFp16Arithmetic": True,
+            "useVulkanCompute": False,
+        },
+        "CTD mask ncnn runtime options changed",
+    )
+    require(
+        text_mask_candidate["status"] == "device_validated",
+        "CTD mask device gate is missing",
+    )
+    require(
+        text_mask_candidate["license"] == "GPL-3.0-only",
+        "CTD mask candidate license drift",
+    )
+    require(
+        text_mask_candidate["numericalParity"]["passed"] is True,
+        "CTD mask parity failed",
+    )
+    require(
+        text_mask_evidence["result"]["passed"] is True,
+        "CTD mask device evidence failed",
+    )
+    require(
+        text_mask_evidence["device"]["deviceSelector"] == "237",
+        "CTD mask device selector changed",
+    )
+    require(
+        int(text_mask_evidence["result"]["warm"]["inferenceMs"]) > 0 and
+        int(text_mask_evidence["result"]["maskedPixels"]) > 0,
+        "CTD mask device output is missing",
+    )
+    text_mask_candidate_artifacts = text_mask_candidate["artifacts"]
+    for artifact in text_mask_candidate_artifacts:
+        validate_artifact(artifact, f"CTD mask candidate {artifact['fileName']}")
     entries = manifest.get("models", [])
     require(entries, "comic model manifest is empty")
     release_tag = manifest.get("releaseTag", "")
@@ -357,6 +432,25 @@ def validate_comic_models(root: Path) -> int:
             for artifact in aot["artifacts"]
         ] == aot_candidate_artifacts,
         "AOT manga artifact metadata drift",
+    )
+    text_mask = next(
+        entry for entry in entries if entry["id"] == text_mask_candidate["modelId"]
+    )
+    require(
+        text_mask["license"] == text_mask_candidate["license"],
+        "CTD mask license metadata drift",
+    )
+    require(
+        text_mask_candidate["release"] is not None and
+        text_mask_candidate["release"]["tag"] == release_tag,
+        "CTD mask candidate release metadata drift",
+    )
+    require(
+        [
+            {key: value for key, value in artifact.items() if key != "urls"}
+            for artifact in text_mask["artifacts"]
+        ] == text_mask_candidate_artifacts,
+        "CTD mask artifact metadata drift",
     )
     return len(entries)
 
@@ -689,7 +783,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.1.5", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.6", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")

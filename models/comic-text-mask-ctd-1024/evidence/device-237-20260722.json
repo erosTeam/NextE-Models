@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "modelId": "comic_text_mask_ctd_1024_ncnn_fp16",
+  "date": "2026-07-22",
+  "scope": "HarmonyOS NextE N-API pixel-level manga text mask inference",
+  "artifactHashes": {
+    "param": "1f7e14f5c327e0341e775bf23fd61f4ec34a4d3661bf13ff06ea32e3c5c8d072",
+    "bin": "c0bdafdc17e194fa28496532abd860aeb1ee08f60f08b919215abd45191f4deb"
+  },
+  "device": {
+    "deviceSelector": "237",
+    "productModel": "VDE-AL00"
+  },
+  "fixture": {
+    "ownership": "NextE tracked synthetic manga evaluation fixture",
+    "width": 1024,
+    "height": 1536,
+    "sourceTracked": true,
+    "uploaded": false
+  },
+  "result": {
+    "backend": "ncnn-fp16-cpu",
+    "threads": 4,
+    "qos": "utility",
+    "threshold": 0.3,
+    "maskedPixels": 29420,
+    "coverage": 0.018704732259114582,
+    "cold": {
+      "modelLoadMs": 87,
+      "inferenceMs": 562,
+      "endToEndMs": 884
+    },
+    "warm": {
+      "modelLoadMs": 0,
+      "inferenceMs": 502,
+      "endToEndMs": 716
+    },
+    "targetedHypium": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "passed": true
+  },
+  "notes": "The exact SHA-locked ncnn FP16 artifacts were downloaded over the local test network into the isolated ohosTest sandbox. The model produced a bounded non-empty text mask on the owned synthetic page; this evidence does not claim full Reader typography or visual acceptance."
+}

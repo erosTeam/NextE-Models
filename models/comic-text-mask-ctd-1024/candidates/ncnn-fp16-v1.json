@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "modelId": "comic_text_mask_ctd_1024_ncnn_fp16",
+  "status": "device_validated",
+  "license": "GPL-3.0-only",
+  "artifacts": [
+    {
+      "fileName": "comic-text-mask-ctd-1024.ncnn.param",
+      "bytes": 15552,
+      "sha256": "1f7e14f5c327e0341e775bf23fd61f4ec34a4d3661bf13ff06ea32e3c5c8d072"
+    },
+    {
+      "fileName": "comic-text-mask-ctd-1024.ncnn.bin",
+      "bytes": 32790420,
+      "sha256": "c0bdafdc17e194fa28496532abd860aeb1ee08f60f08b919215abd45191f4deb"
+    }
+  ],
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../evidence/device-237-20260722.json",
+  "numericalParity": {
+    "reference": "OpenCV DNN execution of the original source ONNX",
+    "fp32MaximumAbsoluteError": 0.0000099,
+    "fp16MaximumAbsoluteError": 0.0463,
+    "fp16MeanAbsoluteError": 0.0000304,
+    "fp16P99AbsoluteError": 0.0002296,
+    "thresholdMismatchAt03": 0.0000248,
+    "thresholdMismatchAt05": 0.0000162,
+    "thresholdMismatchAt07": 0.0000238,
+    "passed": true
+  },
+  "release": {
+    "tag": "model-pack-v1.1.6",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.1.6"
+  }
+}

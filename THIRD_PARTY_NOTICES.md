@@ -147,3 +147,18 @@ published by `manga-image-translator`, and it remains separate from the NextE ap
 The original AOT-GAN architecture provenance does not relicense the GPL checkpoint or the
 `manga-image-translator` integration. The release therefore carries both license texts and labels
 the generated ONNX/ncnn weights `GPL-3.0-only`.
+
+## Comic Text Detector Mask 1024
+
+The optional pixel-level manga text masker is extracted from the Comic Text Detector ONNX model
+published with `manga-image-translator` beta-0.3. It remains separate from the NextE application
+package and from the YSGYolo region detector.
+
+- Detector project: https://github.com/dmMaze/comic-text-detector
+- Pinned detector revision: `440b978563c71b758e31aaa315d100faba1efa2f`
+- Model release: https://github.com/zyddnys/manga-image-translator/releases/tag/beta-0.3
+- Effective source and derived-weight distribution license: `GPL-3.0-only`
+- Source and hashes: `models/comic-text-mask-ctd-1024/source.lock.json`
+
+The immutable model-pack release carries the original ONNX, the extracted ncnn FP16 artifacts,
+the conversion script and the full GPL-3.0 license text.

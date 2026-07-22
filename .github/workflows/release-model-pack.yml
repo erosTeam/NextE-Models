@@ -62,6 +62,14 @@ jobs:
             --model-dir downloads/ppocrv5-mobile-rec \
             --output-dir artifacts/comic-generated
           python -m pip install --upgrade onnx==1.18.0
+          python scripts/fetch_locked_source.py \
+            models/comic-text-mask-ctd-1024/source.lock.json \
+            downloads/comictextdetector.pt.onnx \
+            --entry sourceOnnx
+          python scripts/convert_comic_text_mask_ctd_to_ncnn.py \
+            --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
+            --onnx downloads/comictextdetector.pt.onnx \
+            --output-dir artifacts/comic-generated
           mkdir -p downloads/aot-manga-inpainting-256
           python scripts/fetch_locked_source.py \
             models/aot-manga-inpainting-256/source.lock.json \
@@ -107,6 +115,8 @@ jobs:
           cp models/ysgyolo-1.2-os1/source.lock.json artifacts/model-pack/ysgyolo-1.2-os1-source.lock.json
           cp models/ppocrv5-mobile-rec/source.lock.json artifacts/model-pack/ppocrv5-mobile-rec-source.lock.json
           cp models/aot-manga-inpainting-256/source.lock.json artifacts/model-pack/aot-manga-inpainting-256-source.lock.json
+          cp models/comic-text-mask-ctd-1024/source.lock.json artifacts/model-pack/comic-text-mask-ctd-1024-source.lock.json
+          cp scripts/convert_comic_text_mask_ctd_to_ncnn.py artifacts/model-pack/comic-text-mask-ctd-1024-conversion.py
           cp THIRD_PARTY_NOTICES.md artifacts/model-pack/THIRD_PARTY_NOTICES.md
       - name: Create immutable model-pack release
         env:
