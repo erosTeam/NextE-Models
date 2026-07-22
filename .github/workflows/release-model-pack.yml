@@ -25,6 +25,7 @@ jobs:
       - name: Build the published comic models
         run: |
           python -m pip install \
+            packaging==25.0 \
             paddlepaddle==3.0.0 \
             paddle2onnx==2.1.0 \
             pnnx==20260526 \

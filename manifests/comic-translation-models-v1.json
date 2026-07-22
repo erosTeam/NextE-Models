@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseTag": "model-pack-v1.1.3",
+  "releaseTag": "model-pack-v1.1.4",
   "models": [
     {
       "id": "ysgyolo_1_2_os1_ncnn_fp32",
@@ -14,7 +14,7 @@
           "bytes": 27031,
           "sha256": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ysgyolo_1.2_OS1.0.ncnn.param"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/ysgyolo_1.2_OS1.0.ncnn.param"
           ]
         },
         {
@@ -22,7 +22,7 @@
           "bytes": 10720760,
           "sha256": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ysgyolo_1.2_OS1.0.ncnn.bin"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/ysgyolo_1.2_OS1.0.ncnn.bin"
           ]
         }
       ],
@@ -89,7 +89,7 @@
           "bytes": 19637,
           "sha256": "7be8d21064ec730db52c03b144b57f6022ecdd1703e1fe410ca209c2bf0e4d47",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.ncnn.param"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/ppocrv5_mobile_rec.ncnn.param"
           ]
         },
         {
@@ -97,7 +97,7 @@
           "bytes": 16442228,
           "sha256": "1d73b6e2ee6cbd02cabfac6ef9b6a48e62ae76ae02200ea23ac57b121e29697c",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.ncnn.bin"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/ppocrv5_mobile_rec.ncnn.bin"
           ]
         },
         {
@@ -105,7 +105,7 @@
           "bytes": 74012,
           "sha256": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.dict.txt"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/ppocrv5_mobile_rec.dict.txt"
           ]
         }
       ],

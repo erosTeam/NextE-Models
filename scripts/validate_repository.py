@@ -581,7 +581,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.1.3", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.4", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")
