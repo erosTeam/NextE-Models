@@ -4,6 +4,7 @@ downloads/
 work/
 *.pth
 *.pt
+!models/ysgyolo-1.2-os1/sources/ysgyolo_1.2_OS1.0.pt
 *.onnx
 *.ms
 *.bin

@@ -44,6 +44,12 @@ jobs:
             --pattern '*.zip' \
             --pattern '*.param' \
             --pattern '*.bin'
+          cp models/ysgyolo-1.2-os1/sources/ysgyolo_1.2_OS1.0.pt \
+            artifacts/model-pack/ysgyolo_1.2_OS1.0.pt
+          cp downloads/ysgyolo_1.2_OS1.0.onnx \
+            artifacts/model-pack/ysgyolo_1.2_OS1.0.onnx
+          cp licenses/YSGYolo-AGPL-3.0.txt \
+            artifacts/model-pack/YSGYolo-AGPL-3.0.txt
           python scripts/prepare_model_pack_release_assets.py \
             --models-manifest manifests/models-v1.json \
             --runtime-manifest manifests/ncnn-runtime-assets-v1.json \

@@ -9,6 +9,7 @@
   },
   "checkpoint": {
     "fileName": "ysgyolo_1.2_OS1.0.pt",
+    "vendoredPath": "models/ysgyolo-1.2-os1/sources/ysgyolo_1.2_OS1.0.pt",
     "url": "https://huggingface.co/YSGforMTL/YSGYoloDetector/resolve/563aba14fe3ba9e8c5ea1c8074598365190b3705/ysgyolo_1.2_OS1.0.pt",
     "bytes": 16534011,
     "sha256": "bde7c9d55641a9e319903b6f64c82d5912ccd96977a5a6a28b52c1b639d39096"
@@ -26,6 +27,7 @@
   },
   "licenseText": {
     "fileName": "YSGYolo-AGPL-3.0.txt",
+    "vendoredPath": "licenses/YSGYolo-AGPL-3.0.txt",
     "url": "https://www.gnu.org/licenses/agpl-3.0.txt",
     "bytes": 34523,
     "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"

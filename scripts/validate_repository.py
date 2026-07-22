@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -26,6 +27,16 @@ def validate_artifact(artifact: dict, label: str) -> None:
     require(int(artifact["bytes"]) > 0, f"{label}: artifact bytes must be positive")
     require(bool(SHA256.fullmatch(artifact["sha256"])), f"{label}: invalid SHA-256")
     require(bool(artifact["fileName"]), f"{label}: artifact file name is missing")
+
+
+def validate_vendored_source(root: Path, source: dict, label: str) -> None:
+    path = root / source["vendoredPath"]
+    require(path.is_file(), f"{label}: vendored source is missing")
+    require(path.stat().st_size == int(source["bytes"]), f"{label}: vendored size drift")
+    require(
+        hashlib.sha256(path.read_bytes()).hexdigest() == source["sha256"],
+        f"{label}: vendored SHA-256 drift",
+    )
 
 
 def validate_device_coverage(required_selectors: list[str], devices: list[dict]) -> None:
@@ -64,11 +75,13 @@ def validate_comic_models(root: Path) -> int:
         source = lock[label]
         validate_artifact(source, f"YSGYolo {label}")
         require(str(source["url"]).startswith("https://"), f"{label}: HTTPS URL required")
+    validate_vendored_source(root, lock["checkpoint"], "YSGYolo checkpoint")
     validate_artifact(lock["licenseText"], "YSGYolo license text")
     require(
         str(lock["licenseText"]["url"]).startswith("https://www.gnu.org/"),
         "YSGYolo license text must use the GNU source",
     )
+    validate_vendored_source(root, lock["licenseText"], "YSGYolo license text")
     contract = lock["runtimeContract"]
     require(contract["inputShape"] == [1, 3, 640, 640], "YSGYolo input shape changed")
     require(contract["outputShape"] == [11, 8400], "YSGYolo output shape changed")
@@ -481,7 +494,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.1.1", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.2", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")
@@ -664,14 +677,23 @@ def main() -> int:
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True
     ).stdout.splitlines()
+    vendored_release_sources = {
+        "models/ysgyolo-1.2-os1/sources/ysgyolo_1.2_OS1.0.pt",
+    }
     forbidden_suffixes = (".pth", ".pt", ".onnx", ".ms", ".bin")
-    forbidden = [path for path in tracked if path.endswith(forbidden_suffixes)]
+    forbidden = [
+        path for path in tracked
+        if path.endswith(forbidden_suffixes) and path not in vendored_release_sources
+    ]
     require(not forbidden, f"generated model data is tracked: {forbidden}")
     for path in tracked:
         full = root / path
         if not full.exists():
             continue
-        require(full.stat().st_size < 5 * 1024 * 1024, f"large file belongs in Release: {path}")
+        require(
+            path in vendored_release_sources or full.stat().st_size < 5 * 1024 * 1024,
+            f"large file belongs in Release: {path}",
+        )
 
     print(
         f"repository validation passed: models={len(entries)} "
