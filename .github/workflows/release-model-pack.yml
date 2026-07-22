@@ -34,7 +34,16 @@ jobs:
             --onnx downloads/ysgyolo_1.2_OS1.0.onnx \
             --output-dir artifacts/comic-generated
       - name: Collect and verify all published assets
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          mkdir -p artifacts/model-pack
+          gh release download model-pack-v1.0.0 \
+            --dir artifacts/model-pack \
+            --pattern '*.ms' \
+            --pattern '*.zip' \
+            --pattern '*.param' \
+            --pattern '*.bin'
           python scripts/prepare_model_pack_release_assets.py \
             --models-manifest manifests/models-v1.json \
             --runtime-manifest manifests/ncnn-runtime-assets-v1.json \

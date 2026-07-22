@@ -25,6 +25,10 @@ def fetch_asset(source: dict, artifact: dict, output_dir: Path) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     output = output_dir / artifact["fileName"]
     part = output.with_suffix(output.suffix + ".part")
+    if output.exists():
+        if output.stat().st_size == int(artifact["bytes"]) and sha256(output) == artifact["sha256"]:
+            return output
+        output.unlink()
     if part.exists():
         part.unlink()
     request = urllib.request.Request(source["url"], headers={

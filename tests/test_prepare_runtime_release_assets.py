@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +62,31 @@ class PrepareRuntimeReleaseAssetsTest(unittest.TestCase):
             }
             with self.assertRaisesRegex(RuntimeError, "source SHA-256 mismatch"):
                 MODULE.fetch_asset(source, artifact, temp / "output")
+
+    def test_fetch_asset_reuses_verified_existing_release_asset(self) -> None:
+        payload = b"already-published-runtime-asset"
+        digest = hashlib.sha256(payload).hexdigest()
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            output_dir = temp / "output"
+            output_dir.mkdir()
+            output = output_dir / "published.bin"
+            output.write_bytes(payload)
+            source = {
+                "fileName": "source.bin",
+                "url": "https://invalid.example/source.bin",
+                "bytes": len(payload),
+                "sha256": digest,
+            }
+            artifact = {
+                "fileName": "published.bin",
+                "bytes": len(payload),
+                "sha256": digest,
+            }
+            with mock.patch.object(MODULE.urllib.request, "urlopen") as urlopen:
+                actual = MODULE.fetch_asset(source, artifact, output_dir)
+            self.assertEqual(actual, output)
+            urlopen.assert_not_called()
 
 
 if __name__ == "__main__":
