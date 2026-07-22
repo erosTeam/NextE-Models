@@ -22,9 +22,13 @@ jobs:
         run: |
           python -c 'import json,os; models=json.load(open("manifests/models-v1.json")); runtime=json.load(open("manifests/ncnn-runtime-assets-v1.json")); comic=json.load(open("manifests/comic-translation-models-v1.json")); assert models["releaseTag"]==os.environ["RELEASE_TAG"]; assert runtime["releaseTag"]==os.environ["RELEASE_TAG"]; assert comic["releaseTag"]==os.environ["RELEASE_TAG"]'
           python scripts/validate_repository.py
-      - name: Build the published comic detector
+      - name: Build the published comic models
         run: |
-          python -m pip install pnnx==20260526
+          python -m pip install \
+            paddlepaddle==3.0.0 \
+            paddle2onnx==2.1.0 \
+            pnnx==20260526 \
+            pyyaml==6.0.2
           python scripts/fetch_locked_source.py \
             models/ysgyolo-1.2-os1/source.lock.json \
             downloads/ysgyolo_1.2_OS1.0.onnx \
@@ -32,6 +36,24 @@ jobs:
           python scripts/convert_ysgyolo_onnx_to_ncnn.py \
             --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
             --onnx downloads/ysgyolo_1.2_OS1.0.onnx \
+            --output-dir artifacts/comic-generated
+          mkdir -p downloads/ppocrv5-mobile-rec
+          python scripts/fetch_locked_source.py \
+            models/ppocrv5-mobile-rec/source.lock.json \
+            downloads/ppocrv5-mobile-rec/inference.json \
+            --entry inferenceJson
+          python scripts/fetch_locked_source.py \
+            models/ppocrv5-mobile-rec/source.lock.json \
+            downloads/ppocrv5-mobile-rec/inference.pdiparams \
+            --entry inferenceParams
+          python scripts/fetch_locked_source.py \
+            models/ppocrv5-mobile-rec/source.lock.json \
+            downloads/ppocrv5-mobile-rec/inference.yml \
+            --entry inferenceYml
+          python scripts/convert_ppocrv5_mobile_rec_to_ncnn.py \
+            --paddle2onnx "$(python -c 'import shutil; print(shutil.which("paddle2onnx"))')" \
+            --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
+            --model-dir downloads/ppocrv5-mobile-rec \
             --output-dir artifacts/comic-generated
       - name: Collect and verify all published assets
         env:
@@ -50,6 +72,8 @@ jobs:
             artifacts/model-pack/ysgyolo_1.2_OS1.0.onnx
           cp licenses/YSGYolo-AGPL-3.0.txt \
             artifacts/model-pack/YSGYolo-AGPL-3.0.txt
+          cp licenses/ESPCN-PyTorch-Apache-2.0.txt \
+            artifacts/model-pack/PP-OCRv5-Apache-2.0.txt
           python scripts/prepare_model_pack_release_assets.py \
             --models-manifest manifests/models-v1.json \
             --runtime-manifest manifests/ncnn-runtime-assets-v1.json \
@@ -60,6 +84,7 @@ jobs:
           cp manifests/ncnn-runtime-assets-v1.json artifacts/model-pack/ncnn-runtime-assets-v1.json
           cp manifests/comic-translation-models-v1.json artifacts/model-pack/comic-translation-models-v1.json
           cp models/ysgyolo-1.2-os1/source.lock.json artifacts/model-pack/ysgyolo-1.2-os1-source.lock.json
+          cp models/ppocrv5-mobile-rec/source.lock.json artifacts/model-pack/ppocrv5-mobile-rec-source.lock.json
           cp THIRD_PARTY_NOTICES.md artifacts/model-pack/THIRD_PARTY_NOTICES.md
       - name: Create immutable model-pack release
         env:

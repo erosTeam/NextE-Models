@@ -114,3 +114,18 @@ The model card declares MIT. The pinned checkpoint itself contains Ultralytics m
 this repository distributes the checkpoint and derived ONNX/ncnn artifacts under the stricter
 AGPL-3.0-only label. This is an engineering compliance boundary, not a representation that one
 party can relicense another party's work.
+
+## PP-OCRv5 Mobile Recognition
+
+The optional text-line recognizer is converted from the official PaddleOCR
+`PP-OCRv5_mobile_rec` model and remains separate from the NextE application package.
+
+- Project: https://github.com/PaddlePaddle/PaddleOCR
+- Model repository: https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec
+- Pinned revision: `682f20538d8c086cb2128e5cfac775e6c4904e85`
+- License: Apache-2.0
+- License copy: `licenses/ESPCN-PyTorch-Apache-2.0.txt`
+- Source and hashes: `models/ppocrv5-mobile-rec/source.lock.json`
+
+The generated ONNX and ncnn files, character dictionary, source inference files, source lock,
+and Apache-2.0 license text are published together in the immutable model-pack release.

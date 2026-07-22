@@ -37,6 +37,9 @@ def main() -> int:
         choices=[
             "checkpoint",
             "converter",
+            "inferenceJson",
+            "inferenceParams",
+            "inferenceYml",
             "parameter",
             "source",
             "sourceOnnx",

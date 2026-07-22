@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "modelId": "ppocrv5_mobile_rec_ncnn_fp32",
+  "status": "device_validated",
+  "license": "Apache-2.0",
+  "artifacts": [
+    {
+      "fileName": "ppocrv5_mobile_rec.ncnn.param",
+      "bytes": 19637,
+      "sha256": "7be8d21064ec730db52c03b144b57f6022ecdd1703e1fe410ca209c2bf0e4d47"
+    },
+    {
+      "fileName": "ppocrv5_mobile_rec.ncnn.bin",
+      "bytes": 16442228,
+      "sha256": "1d73b6e2ee6cbd02cabfac6ef9b6a48e62ae76ae02200ea23ac57b121e29697c"
+    },
+    {
+      "fileName": "ppocrv5_mobile_rec.dict.txt",
+      "bytes": 74012,
+      "sha256": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b"
+    }
+  ],
+  "runtimeContractRef": "../source.lock.json#runtimeContract",
+  "deviceEvidenceRef": "../evidence/device-237-20260722.json",
+  "numericalParity": {
+    "reference": "Paddle inference output and ONNX Runtime",
+    "maximumAbsoluteError": 0.000003159,
+    "meanAbsoluteError": 0.000000000282,
+    "allCloseAtol": 0.001,
+    "transcriptParityRuns": 33,
+    "transcriptParityTotal": 36,
+    "passed": true
+  },
+  "fixtureQuality": {
+    "scope": "12 manually isolated manga text lines; three orientation variants each",
+    "exactBest": 7,
+    "caseCount": 12,
+    "meanBestSimilarity": 0.797222,
+    "desktopMeanInferenceMs": 16.251
+  },
+  "release": {
+    "tag": "model-pack-v1.1.3",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.1.3"
+  }
+}

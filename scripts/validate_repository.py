@@ -61,6 +61,13 @@ def validate_comic_models(root: Path) -> int:
     evidence = load(
         root / "models/ysgyolo-1.2-os1/evidence/device-237-20260722.json"
     )
+    ppocr_lock = load(root / "models/ppocrv5-mobile-rec/source.lock.json")
+    ppocr_candidate = load(
+        root / "models/ppocrv5-mobile-rec/candidates/ncnn-fp32-v1.json"
+    )
+    ppocr_evidence = load(
+        root / "models/ppocrv5-mobile-rec/evidence/device-237-20260722.json"
+    )
 
     disposition = lock["licenseDisposition"]
     require(
@@ -101,6 +108,67 @@ def validate_comic_models(root: Path) -> int:
     candidate_artifacts = candidate["artifacts"]
     for artifact in candidate_artifacts:
         validate_artifact(artifact, f"YSGYolo candidate {artifact['fileName']}")
+
+    require(
+        ppocr_lock["upstream"]["license"] == "Apache-2.0",
+        "PP-OCRv5 upstream license drift",
+    )
+    require(
+        ppocr_lock["upstream"]["revision"] ==
+        "682f20538d8c086cb2128e5cfac775e6c4904e85",
+        "PP-OCRv5 source revision drift",
+    )
+    for label in ("inferenceJson", "inferenceParams", "inferenceYml"):
+        source = ppocr_lock[label]
+        validate_artifact(source, f"PP-OCRv5 {label}")
+        require(
+            str(source["url"]).startswith(
+                "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/"
+            ),
+            f"PP-OCRv5 {label}: immutable official source required",
+        )
+    validate_artifact(ppocr_lock["licenseText"], "PP-OCRv5 license text")
+    validate_vendored_source(root, ppocr_lock["licenseText"], "PP-OCRv5 license text")
+    ppocr_contract = ppocr_lock["runtimeContract"]
+    require(
+        ppocr_contract["inputShape"] == [1, 3, 48, 320],
+        "PP-OCRv5 input shape changed",
+    )
+    require(
+        ppocr_contract["outputShape"] == [40, 18385],
+        "PP-OCRv5 output shape changed",
+    )
+    require(
+        all(value is False for value in ppocr_contract["ncnnOptions"].values()),
+        "PP-OCRv5 candidate must keep FP16, packing, and Vulkan disabled",
+    )
+    require(
+        ppocr_candidate["status"] == "device_validated",
+        "PP-OCRv5 device gate is missing",
+    )
+    require(
+        ppocr_candidate["license"] == "Apache-2.0",
+        "PP-OCRv5 candidate license drift",
+    )
+    require(
+        ppocr_candidate["numericalParity"]["passed"] is True,
+        "PP-OCRv5 parity failed",
+    )
+    require(
+        ppocr_candidate["fixtureQuality"]["caseCount"] == 12,
+        "PP-OCRv5 fixture coverage changed",
+    )
+    require(
+        ppocr_evidence["result"]["passed"] is True,
+        "PP-OCRv5 device evidence failed",
+    )
+    require(
+        ppocr_evidence["device"]["deviceSelector"] == "237",
+        "PP-OCRv5 device selector changed",
+    )
+    ppocr_candidate_artifacts = ppocr_candidate["artifacts"]
+    for artifact in ppocr_candidate_artifacts:
+        validate_artifact(artifact, f"PP-OCRv5 candidate {artifact['fileName']}")
     entries = manifest.get("models", [])
     require(entries, "comic model manifest is empty")
     release_tag = manifest.get("releaseTag", "")
@@ -162,6 +230,25 @@ def validate_comic_models(root: Path) -> int:
             for artifact in ysg["artifacts"]
         ] == candidate_artifacts,
         "YSGYolo artifact metadata drift",
+    )
+    ppocr = next(
+        entry for entry in entries if entry["id"] == ppocr_candidate["modelId"]
+    )
+    require(
+        ppocr["license"] == ppocr_candidate["license"],
+        "PP-OCRv5 license metadata drift",
+    )
+    require(
+        ppocr_candidate["release"] is not None and
+        ppocr_candidate["release"]["tag"] == release_tag,
+        "PP-OCRv5 candidate release metadata drift",
+    )
+    require(
+        [
+            {key: value for key, value in artifact.items() if key != "urls"}
+            for artifact in ppocr["artifacts"]
+        ] == ppocr_candidate_artifacts,
+        "PP-OCRv5 artifact metadata drift",
     )
     return len(entries)
 
@@ -494,7 +581,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.1.2", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.3", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")
@@ -673,6 +760,8 @@ def main() -> int:
         require(notice in notices, f"third-party notice is missing: {notice}")
     require("YSGYolo" in notices, "YSGYolo notice is missing")
     require("AGPL-3.0-only" in notices, "YSGYolo effective license is missing")
+    require("PP-OCRv5" in notices, "PP-OCRv5 notice is missing")
+    require("PaddleOCR" in notices, "PaddleOCR notice is missing")
 
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True

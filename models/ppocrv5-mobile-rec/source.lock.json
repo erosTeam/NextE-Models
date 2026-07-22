@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "modelId": "ppocrv5_mobile_rec_ncnn_fp32",
+  "upstream": {
+    "repository": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec",
+    "revision": "682f20538d8c086cb2128e5cfac775e6c4904e85",
+    "license": "Apache-2.0",
+    "architecture": "PP-OCRv5 mobile text-line recognizer"
+  },
+  "inferenceJson": {
+    "fileName": "inference.json",
+    "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.json",
+    "bytes": 217724,
+    "sha256": "24587345250c7332d0fc6f9a44e794d078cdaeb64c302fef906f325619de2569"
+  },
+  "inferenceParams": {
+    "fileName": "inference.pdiparams",
+    "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.pdiparams",
+    "bytes": 16458665,
+    "sha256": "2460da90875937c94db97eba74ae3d9e5d4c4c57c42f1f41531c09a26bcc771a"
+  },
+  "inferenceYml": {
+    "fileName": "inference.yml",
+    "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.yml",
+    "bytes": 148345,
+    "sha256": "5dfeb2777f6d0db8177d8128a8acfcf6e6276dc4ac73ea3bf0dc06d6a5e85d8e"
+  },
+  "licenseText": {
+    "fileName": "PP-OCRv5-Apache-2.0.txt",
+    "vendoredPath": "licenses/ESPCN-PyTorch-Apache-2.0.txt",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "bytes": 11357,
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  "conversion": {
+    "python": "3.11",
+    "paddlepaddle": "3.0.0",
+    "paddle2onnx": "2.1.0",
+    "pnnx": "20260526",
+    "command": "python scripts/convert_ppocrv5_mobile_rec_to_ncnn.py --paddle2onnx /path/to/paddle2onnx --pnnx /path/to/pnnx --model-dir downloads/ppocrv5-mobile-rec --output-dir artifacts/comic-generated"
+  },
+  "runtimeContract": {
+    "inputName": "in0",
+    "inputDataType": "FLOAT32",
+    "inputFormat": "NCHW",
+    "inputShape": [1, 3, 48, 320],
+    "pixelOrder": "BGR",
+    "normalization": "value / 127.5 - 1.0 with zero right padding",
+    "outputName": "out0",
+    "outputDataType": "FLOAT32",
+    "outputShape": [40, 18385],
+    "decoder": "CTC greedy; class 0 blank; 18383 dictionary entries plus space",
+    "ncnnOptions": {
+      "usePackingLayout": false,
+      "useFp16Packed": false,
+      "useFp16Storage": false,
+      "useFp16Arithmetic": false,
+      "useVulkanCompute": false
+    }
+  }
+}

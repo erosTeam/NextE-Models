@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "releaseTag": "model-pack-v1.1.2",
+  "releaseTag": "model-pack-v1.1.3",
   "models": [
     {
       "id": "ysgyolo_1_2_os1_ncnn_fp32",
@@ -14,7 +14,7 @@
           "bytes": 27031,
           "sha256": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.2/ysgyolo_1.2_OS1.0.ncnn.param"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ysgyolo_1.2_OS1.0.ncnn.param"
           ]
         },
         {
@@ -22,7 +22,7 @@
           "bytes": 10720760,
           "sha256": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00",
           "urls": [
-            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.2/ysgyolo_1.2_OS1.0.ncnn.bin"
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ysgyolo_1.2_OS1.0.ncnn.bin"
           ]
         }
       ],
@@ -75,6 +75,102 @@
         "inputFormat": "NCHW",
         "outputName": "out0",
         "outputShape": [11, 8400]
+      }
+    },
+    {
+      "id": "ppocrv5_mobile_rec_ncnn_fp32",
+      "displayName": "PP-OCRv5 Mobile Recognition",
+      "role": "comic-text-line-recognizer",
+      "status": "published",
+      "license": "Apache-2.0",
+      "artifacts": [
+        {
+          "fileName": "ppocrv5_mobile_rec.ncnn.param",
+          "bytes": 19637,
+          "sha256": "7be8d21064ec730db52c03b144b57f6022ecdd1703e1fe410ca209c2bf0e4d47",
+          "urls": [
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.ncnn.param"
+          ]
+        },
+        {
+          "fileName": "ppocrv5_mobile_rec.ncnn.bin",
+          "bytes": 16442228,
+          "sha256": "1d73b6e2ee6cbd02cabfac6ef9b6a48e62ae76ae02200ea23ac57b121e29697c",
+          "urls": [
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.ncnn.bin"
+          ]
+        },
+        {
+          "fileName": "ppocrv5_mobile_rec.dict.txt",
+          "bytes": 74012,
+          "sha256": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b",
+          "urls": [
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.3/ppocrv5_mobile_rec.dict.txt"
+          ]
+        }
+      ],
+      "correspondingSource": [
+        {
+          "source": {
+            "fileName": "inference.json",
+            "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.json",
+            "bytes": 217724,
+            "sha256": "24587345250c7332d0fc6f9a44e794d078cdaeb64c302fef906f325619de2569"
+          },
+          "artifact": {
+            "fileName": "PP-OCRv5_mobile_rec-inference.json",
+            "bytes": 217724,
+            "sha256": "24587345250c7332d0fc6f9a44e794d078cdaeb64c302fef906f325619de2569"
+          }
+        },
+        {
+          "source": {
+            "fileName": "inference.pdiparams",
+            "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.pdiparams",
+            "bytes": 16458665,
+            "sha256": "2460da90875937c94db97eba74ae3d9e5d4c4c57c42f1f41531c09a26bcc771a"
+          },
+          "artifact": {
+            "fileName": "PP-OCRv5_mobile_rec-inference.pdiparams",
+            "bytes": 16458665,
+            "sha256": "2460da90875937c94db97eba74ae3d9e5d4c4c57c42f1f41531c09a26bcc771a"
+          }
+        },
+        {
+          "source": {
+            "fileName": "inference.yml",
+            "url": "https://huggingface.co/PaddlePaddle/PP-OCRv5_mobile_rec/resolve/682f20538d8c086cb2128e5cfac775e6c4904e85/inference.yml",
+            "bytes": 148345,
+            "sha256": "5dfeb2777f6d0db8177d8128a8acfcf6e6276dc4ac73ea3bf0dc06d6a5e85d8e"
+          },
+          "artifact": {
+            "fileName": "PP-OCRv5_mobile_rec-inference.yml",
+            "bytes": 148345,
+            "sha256": "5dfeb2777f6d0db8177d8128a8acfcf6e6276dc4ac73ea3bf0dc06d6a5e85d8e"
+          }
+        },
+        {
+          "source": {
+            "fileName": "LICENSE-2.0.txt",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            "bytes": 11357,
+            "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+          },
+          "artifact": {
+            "fileName": "PP-OCRv5-Apache-2.0.txt",
+            "bytes": 11357,
+            "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+          }
+        }
+      ],
+      "runtime": {
+        "engine": "ncnn-cpu",
+        "precision": "fp32",
+        "inputName": "in0",
+        "inputShape": [1, 3, 48, 320],
+        "inputFormat": "NCHW",
+        "outputName": "out0",
+        "outputShape": [40, 18385]
       }
     }
   ]

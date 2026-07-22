@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "modelId": "ppocrv5_mobile_rec_ncnn_fp32",
+  "date": "2026-07-22",
+  "scope": "HarmonyOS NextE N-API text-line recognizer load and inference",
+  "artifactHashes": {
+    "param": "7be8d21064ec730db52c03b144b57f6022ecdd1703e1fe410ca209c2bf0e4d47",
+    "bin": "1d73b6e2ee6cbd02cabfac6ef9b6a48e62ae76ae02200ea23ac57b121e29697c",
+    "dictionary": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b"
+  },
+  "device": {
+    "deviceSelector": "237",
+    "productModel": "VDE-AL00"
+  },
+  "inputs": [
+    {
+      "id": "horizontal-sign",
+      "expected": "月影駅東口",
+      "actual": "月影駅東口",
+      "score": 0.892,
+      "inferenceMs": 162
+    },
+    {
+      "id": "vertical-caption-ccw",
+      "expected": "午後七時雨",
+      "actual": "午後七時雨",
+      "score": 0.736,
+      "inferenceMs": 46
+    },
+    {
+      "id": "angled-date",
+      "expected": "七月二十日",
+      "actual": "七月二十日",
+      "score": 0.938,
+      "inferenceMs": 47
+    }
+  ],
+  "result": {
+    "backend": "ncnn-fp32-cpu",
+    "modelLoadMs": 53,
+    "targetedHypium": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "passed": true
+  },
+  "notes": "The model files were temporary ohosTest resources and were removed after measurement. Production accepts only high-confidence recognizer output for detector regions missed by system OCR."
+}
