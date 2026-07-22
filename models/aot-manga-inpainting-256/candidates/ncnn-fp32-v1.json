@@ -12,7 +12,7 @@
     {
       "fileName": "aot-manga-inpainting-256.ncnn.bin",
       "bytes": 22711880,
-      "sha256": "f4ab1984cb7b5a27978c40d98ea69b63d74c7528f18f26e3e105a25b3b80bb52"
+      "sha256": "356f816992eeb90d50480e96322d6a06dbb8254524180cb951e15975fb60cd7d"
     }
   ],
   "runtimeContractRef": "../source.lock.json#runtimeContract",
