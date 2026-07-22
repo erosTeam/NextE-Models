@@ -30,8 +30,13 @@ def sha256(path: Path) -> str:
 
 
 def verify(path: Path, expected_bytes: int, expected_sha256: str, label: str) -> None:
-    if path.stat().st_size != expected_bytes or sha256(path) != expected_sha256:
-        raise RuntimeError(f"{label} does not match the locked artifact")
+    actual_bytes = path.stat().st_size
+    actual_sha256 = sha256(path)
+    if actual_bytes != expected_bytes or actual_sha256 != expected_sha256:
+        raise RuntimeError(
+            f"{label} does not match the locked artifact: "
+            f"bytes={actual_bytes} sha256={actual_sha256}"
+        )
 
 
 def load_generator(source: Path):
