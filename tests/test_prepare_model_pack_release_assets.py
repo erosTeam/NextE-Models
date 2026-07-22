@@ -76,6 +76,63 @@ class PrepareModelPackReleaseAssetsTest(unittest.TestCase):
                 Path("unused"),
             )
 
+    def test_collects_generated_comic_model_and_corresponding_source(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_name:
+            temp = Path(temp_name)
+            generated = temp / "generated"
+            generated.mkdir()
+            detector_payload = b"detector"
+            source_payload = b"source"
+            detector = generated / "detector.bin"
+            source = temp / "source.onnx"
+            detector.write_bytes(detector_payload)
+            source.write_bytes(source_payload)
+            detector_digest = hashlib.sha256(detector_payload).hexdigest()
+            source_digest = hashlib.sha256(source_payload).hexdigest()
+            models = {"releaseTag": "model-pack-v1.1.0", "models": []}
+            runtime = {"releaseTag": "model-pack-v1.1.0", "assets": []}
+            comic = {
+                "releaseTag": "model-pack-v1.1.0",
+                "models": [
+                    {
+                        "status": "published",
+                        "artifacts": [
+                            {
+                                "fileName": "detector.bin",
+                                "bytes": len(detector_payload),
+                                "sha256": detector_digest,
+                            }
+                        ],
+                        "correspondingSource": [
+                            {
+                                "source": {
+                                    "fileName": "source.onnx",
+                                    "url": source.as_uri(),
+                                    "bytes": len(source_payload),
+                                    "sha256": source_digest,
+                                },
+                                "artifact": {
+                                    "fileName": "detector-source.onnx",
+                                    "bytes": len(source_payload),
+                                    "sha256": source_digest,
+                                },
+                            }
+                        ],
+                    }
+                ],
+            }
+            outputs = MODULE.prepare_pack(
+                models,
+                runtime,
+                temp / "output",
+                comic,
+                generated,
+            )
+            self.assertEqual(
+                [output.name for output in outputs],
+                ["detector.bin", "detector-source.onnx"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

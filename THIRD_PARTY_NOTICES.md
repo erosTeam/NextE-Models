@@ -105,7 +105,8 @@ NextE application package.
 - Pinned revision: `563aba14fe3ba9e8c5ea1c8074598365190b3705`
 - Runtime architecture: Ultralytics YOLO11 OBB
 - Effective artifact distribution license: `AGPL-3.0-only`
-- License text: https://www.gnu.org/licenses/agpl-3.0.txt
+- Release license copy: `YSGYolo-AGPL-3.0.txt`
+- Canonical license text: https://www.gnu.org/licenses/agpl-3.0.txt
 - Source and hashes: `models/ysgyolo-1.2-os1/source.lock.json`
 
 The model card declares MIT. The pinned checkpoint itself contains Ultralytics module metadata,

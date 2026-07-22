@@ -24,6 +24,12 @@
     "reason": "The author model card declares MIT, but safe ZIP/string inspection of the pinned checkpoint exposes Ultralytics modules, yolo11n-obb.yaml, and embedded license metadata set to AGPL-3.0. Distribution therefore uses the stricter license and records the conflict instead of relabeling the weight MIT.",
     "inspection": "No pickle payload was deserialized. Evidence was collected with file, unzip listing, and printable-string inspection."
   },
+  "licenseText": {
+    "fileName": "YSGYolo-AGPL-3.0.txt",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.txt",
+    "bytes": 34523,
+    "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+  },
   "conversion": {
     "python": "3.11",
     "pnnx": "20260526",

@@ -34,7 +34,14 @@ def main() -> int:
     parser.add_argument("output", type=Path)
     parser.add_argument(
         "--entry",
-        choices=["checkpoint", "converter", "parameter", "source", "weights"],
+        choices=[
+            "checkpoint",
+            "converter",
+            "parameter",
+            "source",
+            "sourceOnnx",
+            "weights",
+        ],
         default="checkpoint",
     )
     args = parser.parse_args()

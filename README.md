@@ -131,7 +131,8 @@ NextE 下载一个尚未发布或未经验证的模型。
 ## 统一模型包
 
 `manifests/models-v1.json` 管理已验证的 NNRT 资产，`manifests/ncnn-runtime-assets-v1.json`
-管理无需重新转换的 ncnn 运行资产。唯一的发布工作流会收集两份清单中的全部有效文件，逐一
+管理无需重新转换的 ncnn 运行资产，`manifests/comic-translation-models-v1.json` 管理漫画翻译
+模型及逐资产许可。唯一的发布工作流会收集三份清单中的全部有效文件，逐一
 验证尺寸与 SHA-256，并发布到同一个 `model-pack-vX.Y.Z` Release。当前模型包还覆盖
 Real-ESRGAN animevideov3 与 x2plus 的 ncnn 来源文件；应用优先使用本仓库 Release，并可保留
 清单中的固定上游地址作为网络回退。
@@ -145,7 +146,7 @@ NNRT 和整页画质门禁，只有 `manifests/models-v1.json` 中的 `published
 
 ## 漫画翻译模型
 
-首个端侧候选为 `YSGYolo 1.2 OS1.0`，职责仅是检测漫画气泡/文字区域；它不进行 OCR、
+首个端侧模型为 `YSGYolo 1.2 OS1.0`，职责仅是检测漫画气泡/文字区域；它不进行 OCR、
 翻译、文字像素分割或背景修复。固定 ONNX 通过 pnnx 20260526 转为 ncnn FP32：
 
 ```bash
@@ -159,3 +160,6 @@ python scripts/convert_ysgyolo_onnx_to_ncnn.py \
 `AGPL-3.0` 许可字段。仓库不尝试把冲突解释成 MIT，而是对 YSGYolo checkpoint、ONNX 和
 ncnn 衍生产物采用更严格的 `AGPL-3.0-only` 分发标记。NextE 自身适配代码仍使用项目原许可；
 每个可选模型资产保留自己的许可。
+
+YSGYolo 的 Release 同时携带 checkpoint、源 ONNX、转换来源锁、第三方说明和完整 AGPL 文本；
+应用只下载运行所需的 param/bin。

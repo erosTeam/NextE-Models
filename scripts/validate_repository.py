@@ -64,6 +64,11 @@ def validate_comic_models(root: Path) -> int:
         source = lock[label]
         validate_artifact(source, f"YSGYolo {label}")
         require(str(source["url"]).startswith("https://"), f"{label}: HTTPS URL required")
+    validate_artifact(lock["licenseText"], "YSGYolo license text")
+    require(
+        str(lock["licenseText"]["url"]).startswith("https://www.gnu.org/"),
+        "YSGYolo license text must use the GNU source",
+    )
     contract = lock["runtimeContract"]
     require(contract["inputShape"] == [1, 3, 640, 640], "YSGYolo input shape changed")
     require(contract["outputShape"] == [11, 8400], "YSGYolo output shape changed")
@@ -85,6 +90,8 @@ def validate_comic_models(root: Path) -> int:
         validate_artifact(artifact, f"YSGYolo candidate {artifact['fileName']}")
     entries = manifest.get("models", [])
     require(entries, "comic model manifest is empty")
+    release_tag = manifest.get("releaseTag", "")
+    require(release_tag.startswith("model-pack-v"), "comic release tag is invalid")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate comic model id: {entry['id']}")
@@ -101,11 +108,41 @@ def validate_comic_models(root: Path) -> int:
                     ) for url in urls),
                     f"{entry['id']}: published URL must point to an immutable release",
                 )
+                expected_url = (
+                    "https://github.com/erosTeam/NextE-Models/releases/download/"
+                    f"{release_tag}/{artifact['fileName']}"
+                )
+                require(urls == [expected_url], f"{entry['id']}: release URL drift")
             else:
                 require(entry["status"] == "candidate", f"unsupported status: {entry['status']}")
                 require(not urls, f"{entry['id']}: candidate must not expose URLs")
+        if entry["status"] == "published":
+            corresponding_source = entry.get("correspondingSource", [])
+            require(corresponding_source, f"{entry['id']}: corresponding source is missing")
+            source_names: set[str] = set()
+            for item in corresponding_source:
+                source = item["source"]
+                artifact = item["artifact"]
+                validate_artifact(source, f"{entry['id']} corresponding source")
+                validate_artifact(artifact, f"{entry['id']} source artifact")
+                require(
+                    str(source["url"]).startswith("https://"),
+                    f"{entry['id']}: corresponding source URL must use HTTPS",
+                )
+                require(artifact["fileName"] not in source_names, "duplicate source artifact")
+                source_names.add(artifact["fileName"])
+                require(
+                    source["bytes"] == artifact["bytes"] and
+                    source["sha256"] == artifact["sha256"],
+                    f"{entry['id']}: corresponding source metadata drift",
+                )
     ysg = next(entry for entry in entries if entry["id"] == candidate["modelId"])
     require(ysg["license"] == candidate["license"], "YSGYolo license metadata drift")
+    require(
+        candidate["release"] is not None and
+        candidate["release"]["tag"] == release_tag,
+        "YSGYolo candidate release metadata drift",
+    )
     require(
         [
             {key: value for key, value in artifact.items() if key != "urls"}
@@ -132,7 +169,12 @@ def main() -> int:
     experiment = load(root / "models/realesrgan-x2plus/experiments/weight-int8-device-103.json")
     manifest = load(root / "manifests/models-v1.json")
     comic_model_count = validate_comic_models(root)
+    comic_manifest = load(root / "manifests/comic-translation-models-v1.json")
     runtime_manifest = load(root / "manifests/ncnn-runtime-assets-v1.json")
+    require(
+        comic_manifest["releaseTag"] == manifest["releaseTag"],
+        "model and comic manifests use different release tags",
+    )
     waifu_lock = load(root / "models/waifu2x-photo-noise0-x2/source.lock.json")
     waifu_art_lock = load(root / "models/waifu2x-art-noise0-x2/source.lock.json")
     waifu_art_candidate = load(
@@ -439,7 +481,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.0.0", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.0", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")

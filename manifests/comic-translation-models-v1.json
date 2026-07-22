@@ -1,24 +1,70 @@
 {
   "schemaVersion": 1,
+  "releaseTag": "model-pack-v1.1.0",
   "models": [
     {
       "id": "ysgyolo_1_2_os1_ncnn_fp32",
       "displayName": "YSGYolo 1.2 OS1.0",
       "role": "comic-region-detector",
-      "status": "candidate",
+      "status": "published",
       "license": "AGPL-3.0-only",
       "artifacts": [
         {
           "fileName": "ysgyolo_1.2_OS1.0.ncnn.param",
           "bytes": 27031,
           "sha256": "f3617c7834bf3f7ae67521db908a53709140aeb1c11a02f8c64b7c091b569987",
-          "urls": []
+          "urls": [
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.0/ysgyolo_1.2_OS1.0.ncnn.param"
+          ]
         },
         {
           "fileName": "ysgyolo_1.2_OS1.0.ncnn.bin",
           "bytes": 10720760,
           "sha256": "7658e654db1a2e8a77c387607def85d5d297b26f110cc2b334dd52ae17a4fe00",
-          "urls": []
+          "urls": [
+            "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.0/ysgyolo_1.2_OS1.0.ncnn.bin"
+          ]
+        }
+      ],
+      "correspondingSource": [
+        {
+          "source": {
+            "fileName": "ysgyolo_1.2_OS1.0.pt",
+            "url": "https://huggingface.co/YSGforMTL/YSGYoloDetector/resolve/563aba14fe3ba9e8c5ea1c8074598365190b3705/ysgyolo_1.2_OS1.0.pt",
+            "bytes": 16534011,
+            "sha256": "bde7c9d55641a9e319903b6f64c82d5912ccd96977a5a6a28b52c1b639d39096"
+          },
+          "artifact": {
+            "fileName": "ysgyolo_1.2_OS1.0.pt",
+            "bytes": 16534011,
+            "sha256": "bde7c9d55641a9e319903b6f64c82d5912ccd96977a5a6a28b52c1b639d39096"
+          }
+        },
+        {
+          "source": {
+            "fileName": "ysgyolo_1.2_OS1.0.onnx",
+            "url": "https://github.com/hgmzhn/manga-translator-ui/releases/download/v1.7.1/ysgyolo_1.2_OS1.0.onnx",
+            "bytes": 10838944,
+            "sha256": "6f3202925f01fdf045f8c31a3bf62e6c44944f56ce09107eb436bc5a5b185ebe"
+          },
+          "artifact": {
+            "fileName": "ysgyolo_1.2_OS1.0.onnx",
+            "bytes": 10838944,
+            "sha256": "6f3202925f01fdf045f8c31a3bf62e6c44944f56ce09107eb436bc5a5b185ebe"
+          }
+        },
+        {
+          "source": {
+            "fileName": "AGPL-3.0.txt",
+            "url": "https://www.gnu.org/licenses/agpl-3.0.txt",
+            "bytes": 34523,
+            "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+          },
+          "artifact": {
+            "fileName": "YSGYolo-AGPL-3.0.txt",
+            "bytes": 34523,
+            "sha256": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+          }
         }
       ],
       "runtime": {

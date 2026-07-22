@@ -20,16 +20,32 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          python -c 'import json,os; models=json.load(open("manifests/models-v1.json")); runtime=json.load(open("manifests/ncnn-runtime-assets-v1.json")); assert models["releaseTag"]==os.environ["RELEASE_TAG"]; assert runtime["releaseTag"]==os.environ["RELEASE_TAG"]'
+          python -c 'import json,os; models=json.load(open("manifests/models-v1.json")); runtime=json.load(open("manifests/ncnn-runtime-assets-v1.json")); comic=json.load(open("manifests/comic-translation-models-v1.json")); assert models["releaseTag"]==os.environ["RELEASE_TAG"]; assert runtime["releaseTag"]==os.environ["RELEASE_TAG"]; assert comic["releaseTag"]==os.environ["RELEASE_TAG"]'
           python scripts/validate_repository.py
+      - name: Build the published comic detector
+        run: |
+          python -m pip install pnnx==20260526
+          python scripts/fetch_locked_source.py \
+            models/ysgyolo-1.2-os1/source.lock.json \
+            downloads/ysgyolo_1.2_OS1.0.onnx \
+            --entry sourceOnnx
+          python scripts/convert_ysgyolo_onnx_to_ncnn.py \
+            --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
+            --onnx downloads/ysgyolo_1.2_OS1.0.onnx \
+            --output-dir artifacts/comic-generated
       - name: Collect and verify all published assets
         run: |
           python scripts/prepare_model_pack_release_assets.py \
             --models-manifest manifests/models-v1.json \
             --runtime-manifest manifests/ncnn-runtime-assets-v1.json \
+            --comic-manifest manifests/comic-translation-models-v1.json \
+            --generated-comic-dir artifacts/comic-generated \
             --output artifacts/model-pack
           cp manifests/models-v1.json artifacts/model-pack/models-v1.json
           cp manifests/ncnn-runtime-assets-v1.json artifacts/model-pack/ncnn-runtime-assets-v1.json
+          cp manifests/comic-translation-models-v1.json artifacts/model-pack/comic-translation-models-v1.json
+          cp models/ysgyolo-1.2-os1/source.lock.json artifacts/model-pack/ysgyolo-1.2-os1-source.lock.json
+          cp THIRD_PARTY_NOTICES.md artifacts/model-pack/THIRD_PARTY_NOTICES.md
       - name: Create immutable model-pack release
         env:
           GH_TOKEN: ${{ github.token }}

@@ -25,5 +25,8 @@
     "allCloseAtol": 0.001,
     "passed": true
   },
-  "release": null
+  "release": {
+    "tag": "model-pack-v1.1.0",
+    "url": "https://github.com/erosTeam/NextE-Models/releases/tag/model-pack-v1.1.0"
+  }
 }
