@@ -25,6 +25,11 @@ jobs:
       - name: Build the published comic models
         run: |
           python -m pip install \
+            --index-url https://download.pytorch.org/whl/cpu \
+            torch==2.8.0
+          python -m pip install \
+            numpy==2.2.6 \
+            onnx==1.18.0 \
             packaging==25.0 \
             paddlepaddle==3.0.0 \
             paddle2onnx==2.1.0 \
@@ -56,6 +61,20 @@ jobs:
             --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
             --model-dir downloads/ppocrv5-mobile-rec \
             --output-dir artifacts/comic-generated
+          mkdir -p downloads/aot-manga-inpainting-256
+          python scripts/fetch_locked_source.py \
+            models/aot-manga-inpainting-256/source.lock.json \
+            downloads/aot-manga-inpainting-256/inpainting.ckpt \
+            --entry checkpoint
+          python scripts/fetch_locked_source.py \
+            models/aot-manga-inpainting-256/source.lock.json \
+            downloads/aot-manga-inpainting-256/inpainting_aot.py \
+            --entry architectureSource
+          python scripts/convert_aot_manga_inpainting_to_ncnn.py \
+            --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
+            --checkpoint downloads/aot-manga-inpainting-256/inpainting.ckpt \
+            --source downloads/aot-manga-inpainting-256/inpainting_aot.py \
+            --output-dir artifacts/comic-generated
       - name: Collect and verify all published assets
         env:
           GH_TOKEN: ${{ github.token }}
@@ -86,6 +105,7 @@ jobs:
           cp manifests/comic-translation-models-v1.json artifacts/model-pack/comic-translation-models-v1.json
           cp models/ysgyolo-1.2-os1/source.lock.json artifacts/model-pack/ysgyolo-1.2-os1-source.lock.json
           cp models/ppocrv5-mobile-rec/source.lock.json artifacts/model-pack/ppocrv5-mobile-rec-source.lock.json
+          cp models/aot-manga-inpainting-256/source.lock.json artifacts/model-pack/aot-manga-inpainting-256-source.lock.json
           cp THIRD_PARTY_NOTICES.md artifacts/model-pack/THIRD_PARTY_NOTICES.md
       - name: Create immutable model-pack release
         env:

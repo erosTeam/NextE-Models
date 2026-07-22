@@ -178,5 +178,22 @@ python scripts/convert_ppocrv5_mobile_rec_to_ncnn.py \
 ```
 
 Release 同时包含三份 Paddle 原始推理文件、来源锁、Apache-2.0 文本、ncnn param/bin 和字符
-字典。应用设置中仍是一个“端侧漫画模型”能力包，但许可按 YSGYolo 与 PP-OCRv5 两个组件分别
+字典。
+
+`AOT Manga Inpainting 256` 负责在文字掩码内重建背景。端侧只把有界区域缩放并反射填充到
+256×256，ncnn 推理后仅替换掩码内 RGB；掩码外 RGB 与整图 alpha 必须逐字节不变：
+
+```bash
+python scripts/convert_aot_manga_inpainting_to_ncnn.py \
+  --pnnx /path/to/pnnx \
+  --checkpoint downloads/aot-manga-inpainting-256/inpainting.ckpt \
+  --source downloads/aot-manga-inpainting-256/inpainting_aot.py \
+  --output-dir artifacts/comic-generated
+```
+
+原始 AOT-GAN 架构为 Apache-2.0；本模型实际使用的 checkpoint 和集成源来自 GPL-3.0 的
+`manga-image-translator`，因此衍生 ONNX/ncnn 权重按 `GPL-3.0-only` 分发。Release 同时携带
+两条来源及两份许可文本，不把“多来源许可”误写成同一权重可任选许可。
+
+应用设置中仍是一个“端侧漫画模型”能力包，但 YSGYolo、PP-OCRv5 与 AOT 修复模型的许可分别
 展示和保留。

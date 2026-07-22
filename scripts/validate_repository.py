@@ -68,6 +68,13 @@ def validate_comic_models(root: Path) -> int:
     ppocr_evidence = load(
         root / "models/ppocrv5-mobile-rec/evidence/device-237-20260722.json"
     )
+    aot_lock = load(root / "models/aot-manga-inpainting-256/source.lock.json")
+    aot_candidate = load(
+        root / "models/aot-manga-inpainting-256/candidates/ncnn-fp32-v1.json"
+    )
+    aot_evidence = load(
+        root / "models/aot-manga-inpainting-256/evidence/device-237-20260722.json"
+    )
 
     disposition = lock["licenseDisposition"]
     require(
@@ -169,6 +176,88 @@ def validate_comic_models(root: Path) -> int:
     ppocr_candidate_artifacts = ppocr_candidate["artifacts"]
     for artifact in ppocr_candidate_artifacts:
         validate_artifact(artifact, f"PP-OCRv5 candidate {artifact['fileName']}")
+
+    require(
+        aot_lock["upstream"]["integrationRevision"] ==
+        "95227a2bb0fd306cd4f0c104d57284026f991b3a",
+        "AOT manga integration revision drift",
+    )
+    require(
+        aot_lock["upstream"]["architectureRevision"] ==
+        "2cd1afd8fdfabb101c678f6062d14bc7d302509e",
+        "AOT-GAN architecture revision drift",
+    )
+    require(
+        aot_lock["licenseDisposition"]["effectiveDistributionLicense"] ==
+        "GPL-3.0-only",
+        "AOT manga artifact must retain GPL-3.0-only distribution",
+    )
+    component_licenses = {
+        item["license"]
+        for item in aot_lock["licenseDisposition"]["componentLicenses"]
+    }
+    require(
+        component_licenses == {"GPL-3.0-only", "Apache-2.0"},
+        "AOT manga component license provenance drift",
+    )
+    for label in (
+        "checkpoint",
+        "architectureSource",
+        "gplLicenseText",
+        "apacheLicenseText",
+    ):
+        source = aot_lock[label]
+        validate_artifact(source, f"AOT manga {label}")
+        require(str(source["url"]).startswith("https://"), f"AOT manga {label}: HTTPS required")
+    aot_contract = aot_lock["runtimeContract"]
+    require(
+        aot_contract["imageInputShape"] == [1, 3, 256, 256],
+        "AOT manga image input shape changed",
+    )
+    require(
+        aot_contract["maskInputShape"] == [1, 1, 256, 256],
+        "AOT manga mask input shape changed",
+    )
+    require(
+        aot_contract["outputShape"] == [1, 3, 256, 256],
+        "AOT manga output shape changed",
+    )
+    require(
+        all(value is False for value in aot_contract["ncnnOptions"].values()),
+        "AOT manga candidate must keep FP16, packing, and Vulkan disabled",
+    )
+    require(
+        aot_candidate["status"] == "device_validated",
+        "AOT manga device gate is missing",
+    )
+    require(
+        aot_candidate["license"] == "GPL-3.0-only",
+        "AOT manga candidate license drift",
+    )
+    require(
+        aot_candidate["pixelContract"]["passed"] is True,
+        "AOT manga pixel contract failed",
+    )
+    require(
+        aot_candidate["pixelContract"]["unmaskedRgbMaximumDelta"] == 0 and
+        aot_candidate["pixelContract"]["alphaMaximumDelta"] == 0,
+        "AOT manga source preservation drift",
+    )
+    require(
+        aot_evidence["result"]["passed"] is True,
+        "AOT manga device evidence failed",
+    )
+    require(
+        aot_evidence["device"]["deviceSelector"] == "237",
+        "AOT manga device selector changed",
+    )
+    require(
+        int(aot_evidence["result"]["warm"]["inferenceMs"]) > 0,
+        "AOT manga device inference time is missing",
+    )
+    aot_candidate_artifacts = aot_candidate["artifacts"]
+    for artifact in aot_candidate_artifacts:
+        validate_artifact(artifact, f"AOT manga candidate {artifact['fileName']}")
     entries = manifest.get("models", [])
     require(entries, "comic model manifest is empty")
     release_tag = manifest.get("releaseTag", "")
@@ -249,6 +338,25 @@ def validate_comic_models(root: Path) -> int:
             for artifact in ppocr["artifacts"]
         ] == ppocr_candidate_artifacts,
         "PP-OCRv5 artifact metadata drift",
+    )
+    aot = next(
+        entry for entry in entries if entry["id"] == aot_candidate["modelId"]
+    )
+    require(
+        aot["license"] == aot_candidate["license"],
+        "AOT manga license metadata drift",
+    )
+    require(
+        aot_candidate["release"] is not None and
+        aot_candidate["release"]["tag"] == release_tag,
+        "AOT manga candidate release metadata drift",
+    )
+    require(
+        [
+            {key: value for key, value in artifact.items() if key != "urls"}
+            for artifact in aot["artifacts"]
+        ] == aot_candidate_artifacts,
+        "AOT manga artifact metadata drift",
     )
     return len(entries)
 
@@ -581,7 +689,7 @@ def main() -> int:
     entries = manifest.get("models", [])
     require(entries, "model manifest is empty")
     model_release_tag = manifest["releaseTag"]
-    require(model_release_tag == "model-pack-v1.1.4", "unexpected model release tag")
+    require(model_release_tag == "model-pack-v1.1.5", "unexpected model release tag")
     ids: set[str] = set()
     for entry in entries:
         require(entry["id"] not in ids, f"duplicate model id: {entry['id']}")
@@ -762,6 +870,10 @@ def main() -> int:
     require("AGPL-3.0-only" in notices, "YSGYolo effective license is missing")
     require("PP-OCRv5" in notices, "PP-OCRv5 notice is missing")
     require("PaddleOCR" in notices, "PaddleOCR notice is missing")
+    require("AOT Manga Inpainting" in notices, "AOT manga notice is missing")
+    require("GPL-3.0-only" in notices, "AOT manga effective license is missing")
+    require("AOT-GAN" in notices and "Apache-2.0" in notices,
+            "AOT-GAN architecture provenance is missing")
 
     tracked = subprocess.run(
         ["git", "ls-files"], cwd=root, check=True, capture_output=True, text=True

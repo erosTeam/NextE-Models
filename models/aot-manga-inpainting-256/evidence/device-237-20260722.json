@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "modelId": "aot_manga_inpainting_256_ncnn_fp32",
+  "date": "2026-07-22",
+  "scope": "HarmonyOS NextE N-API bounded manga source inpainting",
+  "artifactHashes": {
+    "param": "fcaf0b35e6bf19d94f3fe42c98e484bb6e754ede71ffaaa2a48cc9ad5d737b66",
+    "bin": "f4ab1984cb7b5a27978c40d98ea69b63d74c7528f18f26e3e105a25b3b80bb52"
+  },
+  "device": {
+    "deviceSelector": "237",
+    "productModel": "VDE-AL00"
+  },
+  "fixture": {
+    "width": 192,
+    "height": 128,
+    "mask": "bounded irregular synthetic text-region mask",
+    "sourceTracked": false
+  },
+  "result": {
+    "backend": "ncnn-fp32-cpu",
+    "threads": 4,
+    "qos": "utility",
+    "cold": {
+      "modelLoadMs": 83,
+      "inferenceMs": 290,
+      "endToEndMs": 3448
+    },
+    "warm": {
+      "modelLoadMs": 0,
+      "inferenceMs": 492,
+      "endToEndMs": 502
+    },
+    "pixelContract": {
+      "maskedRgbChanged": true,
+      "unmaskedRgbMaximumDelta": 0,
+      "alphaMaximumDelta": 0,
+      "outputDimensionsPreserved": true
+    },
+    "targetedHypium": {
+      "tests": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "passed": true
+  },
+  "notes": "The model files were supplied to the gated ohosTest outside the HAP. The production app uses the same fixed-shape native boundary and may fall back to deterministic local fill when the optional model is unavailable or fails."
+}

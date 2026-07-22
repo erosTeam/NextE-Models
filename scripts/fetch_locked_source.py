@@ -35,8 +35,11 @@ def main() -> int:
     parser.add_argument(
         "--entry",
         choices=[
+            "apacheLicenseText",
+            "architectureSource",
             "checkpoint",
             "converter",
+            "gplLicenseText",
             "inferenceJson",
             "inferenceParams",
             "inferenceYml",

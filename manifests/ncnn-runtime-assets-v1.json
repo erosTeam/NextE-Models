@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "published",
-  "releaseTag": "model-pack-v1.1.4",
+  "releaseTag": "model-pack-v1.1.5",
   "assets": [
     {
       "id": "espcn_x2_source_zip",
@@ -18,7 +18,7 @@
         "bytes": 80589,
         "sha256": "11a286a0a761ec78a4f0ec17b905d2dbe12a19263e6315a25c08c6aaf983410c",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/espcn-x2.zip"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/espcn-x2.zip"
         ]
       }
     },
@@ -37,7 +37,7 @@
         "bytes": 1047,
         "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-photo-noise0-2x.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-photo-noise0-2x.param"
         ]
       }
     },
@@ -56,7 +56,7 @@
         "bytes": 1106248,
         "sha256": "fbfc8d57e4333748c9c6db2ec4d5454c98cd1c6aa53289f2989c3bdb4e84b673",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-photo-noise0-2x.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-photo-noise0-2x.bin"
         ]
       }
     },
@@ -75,7 +75,7 @@
         "bytes": 1047,
         "sha256": "413195ffde05b4d43807792c6c020c916cecdf25dcf002ee83f5e28d5cc246c6",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-art-noise0-2x.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-art-noise0-2x.param"
         ]
       }
     },
@@ -94,7 +94,7 @@
         "bytes": 1106248,
         "sha256": "e1d2c4d91be98e72c0d48d08626cbe7d879aa2b80f740133dcc0d860eabb4189",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-art-noise0-2x.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-art-noise0-2x.bin"
         ]
       }
     },
@@ -113,7 +113,7 @@
         "bytes": 7249,
         "sha256": "ccc3b2f1c9fad829ecdda40cac8dc853fcddf14917170efba888b256fbf9074a",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-cunet-noise0-2x.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-cunet-noise0-2x.param"
         ]
       }
     },
@@ -132,7 +132,7 @@
         "bytes": 2776400,
         "sha256": "5329a9375c9cfb64a60a2903fd8ae6e2851d9b069556bf025dbab9d0216fb27c",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/waifu2x-cunet-noise0-2x.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/waifu2x-cunet-noise0-2x.bin"
         ]
       }
     },
@@ -151,7 +151,7 @@
         "bytes": 4761,
         "sha256": "4b3b5c5710ad1d00503c8243417aa75f13fe497723e8b4952e8b1abfc08f9b84",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realcugan-se-2x-conservative.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realcugan-se-2x-conservative.param"
         ]
       }
     },
@@ -170,7 +170,7 @@
         "bytes": 2573648,
         "sha256": "91c72c136e7ff8556323d4449c5ceeff22d9829bf8463a01137cadb8d59b84a0",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realcugan-se-2x-conservative.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realcugan-se-2x-conservative.bin"
         ]
       }
     },
@@ -189,7 +189,7 @@
         "bytes": 3173,
         "sha256": "b88ff4f00ebf019a7fdac17fdd45a7fd3665d37509efc5baf2e4da2e24420a04",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realesr-animevideov3-x2.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realesr-animevideov3-x2.param"
         ]
       }
     },
@@ -208,7 +208,7 @@
         "bytes": 1247368,
         "sha256": "548a36f9c3f4ab8da56cd3b13badf23968bee207b396dad14d04b830e5f2ab2d",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realesr-animevideov3-x2.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realesr-animevideov3-x2.bin"
         ]
       }
     },
@@ -227,7 +227,7 @@
         "bytes": 292200,
         "sha256": "79cb4938c0465a3b7d66aa21e9dc0e595a2ab2015b453831426f37a536b925b5",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realesrgan_x2plus.param"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realesrgan_x2plus.param"
         ]
       }
     },
@@ -246,7 +246,7 @@
         "bytes": 66814128,
         "sha256": "119cbbcf701a976a016d03fc5c457157e52a94f5e3e929e562e9ec87596d782b",
         "urls": [
-          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.4/realesrgan_x2plus.bin"
+          "https://github.com/erosTeam/NextE-Models/releases/download/model-pack-v1.1.5/realesrgan_x2plus.bin"
         ]
       }
     }

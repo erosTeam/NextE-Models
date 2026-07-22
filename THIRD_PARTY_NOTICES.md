@@ -129,3 +129,21 @@ The optional text-line recognizer is converted from the official PaddleOCR
 
 The generated ONNX and ncnn files, character dictionary, source inference files, source lock,
 and Apache-2.0 license text are published together in the immutable model-pack release.
+
+## AOT Manga Inpainting 256
+
+The optional manga background inpainter is converted from the checkpoint and integration source
+published by `manga-image-translator`, and it remains separate from the NextE application package.
+
+- Integration project: https://github.com/zyddnys/manga-image-translator
+- Pinned integration revision: `95227a2bb0fd306cd4f0c104d57284026f991b3a`
+- Checkpoint: `inpainting.ckpt` from the `beta-0.3` release
+- Effective checkpoint and derived-weight distribution license: `GPL-3.0-only`
+- Original architecture project: https://github.com/researchmm/AOT-GAN-for-Inpainting
+- Pinned architecture revision: `2cd1afd8fdfabb101c678f6062d14bc7d302509e`
+- Original architecture license: `Apache-2.0`
+- Source and hashes: `models/aot-manga-inpainting-256/source.lock.json`
+
+The original AOT-GAN architecture provenance does not relicense the GPL checkpoint or the
+`manga-image-translator` integration. The release therefore carries both license texts and labels
+the generated ONNX/ncnn weights `GPL-3.0-only`.
