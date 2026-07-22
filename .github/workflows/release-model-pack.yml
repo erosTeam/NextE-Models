@@ -29,7 +29,7 @@ jobs:
             torch==2.8.0
           python -m pip install \
             numpy==2.2.6 \
-            onnx==1.18.0 \
+            onnx==1.17.0 \
             packaging==25.0 \
             paddlepaddle==3.0.0 \
             paddle2onnx==2.1.0 \
@@ -61,6 +61,7 @@ jobs:
             --pnnx "$(python -c 'import shutil; print(shutil.which("pnnx"))')" \
             --model-dir downloads/ppocrv5-mobile-rec \
             --output-dir artifacts/comic-generated
+          python -m pip install --upgrade onnx==1.18.0
           mkdir -p downloads/aot-manga-inpainting-256
           python scripts/fetch_locked_source.py \
             models/aot-manga-inpainting-256/source.lock.json \
